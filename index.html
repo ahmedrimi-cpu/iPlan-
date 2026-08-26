@@ -3,12 +3,12 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>My Plan</title>
+<title>Planner</title>
 <link rel="manifest" href="./manifest.json">
 <meta name="theme-color" content="#F3ECDA">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
-<meta name="apple-mobile-web-app-title" content="My Plan">
+<meta name="apple-mobile-web-app-title" content="Planner">
 <link rel="apple-touch-icon" href="./icon-192.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -20,6 +20,7 @@
   --gold:#8C6A2F; --gold-dim:#EDE2C4;
   --sage:#5B7460; --sage-dim:#DCE6D9;
   --slate:#4B5D73; --slate-dim:#DCE3EA;
+  --leave:#6B5B8C; --leave-dim:#E5DEF0;
   --now:#A8452E;
 }
 *{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
@@ -55,7 +56,7 @@ button{font-family:inherit;}
 .trail{width:34px;flex-shrink:0;display:flex;flex-direction:column;align-items:center;position:relative;}
 .trail::before{content:'';position:absolute;top:0;bottom:0;width:1px;background:var(--line);}
 .ticon{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:15px;z-index:1;margin-top:6px;}
-.tcard{flex:1;background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:12px 14px;margin-bottom:10px;display:flex;align-items:center;justify-content:space-between;min-height:20px;cursor:pointer;}
+.tcard{flex:1;background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:12px 14px;margin-bottom:10px;display:flex;align-items:center;justify-content:space-between;min-height:20px;cursor:pointer;touch-action:pan-y;}
 .tcard.prayer{background:var(--sage-dim);border-color:var(--sage-dim);padding:10px 14px;cursor:default;}
 .ttitle{font-size:14.5px;font-weight:600;color:var(--ink);}
 .tsub{font-size:11.5px;color:var(--ink-muted);margin-top:2px;}
@@ -71,6 +72,9 @@ button{font-family:inherit;}
 .now-line{flex:1;height:1.5px;background:repeating-linear-gradient(90deg,var(--now) 0 6px,transparent 6px 11px);position:relative;margin-left:2px;}
 .now-line::before{content:'';position:absolute;left:-8px;top:50%;transform:translateY(-50%);width:8px;height:8px;border-radius:50%;background:var(--now);}
 .now-label{font-family:'IBM Plex Mono';font-size:10px;color:var(--now);font-weight:700;letter-spacing:0.5px;margin-left:6px;}
+.gap-add{height:14px;margin-left:46px;display:flex;align-items:center;opacity:0.35;cursor:pointer;}
+.gap-add span{font-size:12px;color:var(--ink-faint);}
+.gap-add:active{opacity:0.9;}
 
 .subtasks{padding:0 14px 6px 90px;margin-top:-8px;margin-bottom:10px;}
 .subtask-row{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--line);font-size:13.5px;}
@@ -79,7 +83,7 @@ button{font-family:inherit;}
 .subtask-check.done{background:var(--sage);border-color:var(--sage);position:relative;}
 .subtask-check.done::after{content:'✓';position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:#FBF6EA;font-size:11px;}
 .subtask-row.done span{text-decoration:line-through;color:var(--ink-faint);}
-.subtask-row span{flex:1;}
+.subtask-row span{flex:1;cursor:pointer;}
 .subtask-del{background:none;border:none;color:var(--ink-faint);font-size:15px;cursor:pointer;padding:2px 4px;}
 .subtask-add{display:flex;gap:6px;padding:8px 0 2px;}
 .subtask-add input{flex:1;background:var(--paper-2);border:1px solid var(--line);color:var(--ink);padding:7px 9px;border-radius:8px;font-size:12.5px;}
@@ -110,13 +114,13 @@ button{font-family:inherit;}
 .wd-chip{font-size:10.5px;padding:4px 9px;border-radius:8px;background:var(--paper-2);color:var(--ink-muted);}
 
 .inbox-wrap{padding:16px 14px;}
-.area-card{background:var(--paper);border:1px solid var(--line);border-radius:14px;margin-bottom:10px;overflow:hidden;}
+.area-card{background:var(--paper);border:1px solid var(--line);border-radius:14px;margin-bottom:10px;overflow:hidden;touch-action:pan-y;}
 .area-head{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;cursor:pointer;}
 .area-name{font-size:15px;font-weight:600;display:flex;align-items:center;gap:9px;}
 .area-count{font-family:'IBM Plex Mono';font-size:11px;color:var(--ink-muted);}
 .area-items{border-top:1px solid var(--line);padding:6px 14px 10px;display:none;}
 .area-items.open{display:block;}
-.area-item{display:flex;align-items:center;gap:10px;padding:10px 4px;border-bottom:1px solid var(--line);}
+.area-item{display:flex;align-items:center;gap:10px;padding:10px 4px;border-bottom:1px solid var(--line);touch-action:pan-y;}
 .area-item:last-child{border-bottom:none;}
 .area-item span{flex:1;font-size:13.5px;cursor:pointer;}
 .area-item .promote{font-size:10.5px;color:var(--ink-muted);border:1px solid var(--line);border-radius:8px;padding:4px 8px;background:none;}
@@ -174,17 +178,26 @@ button{font-family:inherit;}
 <div class="header">
   <div class="header-row">
     <div>
-      <div class="app-name">My Plan</div>
+      <div class="app-name">Planner</div>
       <div><span class="date-main" id="hMain">Mon, 24</span><span class="date-sub" id="hSub">August 2026</span></div>
     </div>
-    <div style="display:flex;gap:6px;"><button class="icon-btn" id="headerAddBtn">＋ Add</button><button class="icon-btn" id="settingsBtn">⚙</button></div>
+    <div style="display:flex;gap:6px;"><button class="icon-btn" id="headerAddBtn" style="font-size:20px;padding:8px 14px;">＋</button><button class="icon-btn" id="settingsBtn">⚙</button></div>
   </div>
 </div>
 
-<div class="strip" id="strip"></div>
+<div style="display:flex;align-items:center;gap:6px;padding:0 14px;">
+  <button class="icon-btn" id="prevWeekBtn" style="padding:8px 12px;">‹</button>
+  <div class="strip" id="strip" style="flex:1;padding:0 0 4px;"></div>
+  <button class="icon-btn" id="nextWeekBtn" style="padding:8px 12px;">›</button>
+</div>
+<div style="padding:2px 14px 4px;display:flex;justify-content:space-between;align-items:center;">
+  <span class="wd-chip" id="markLeaveBtn" style="cursor:pointer;">🏖 Mark this day as leave</span>
+  <span id="todayJumpWrap"></span>
+</div>
 
 <div class="view active" id="viewToday">
   <div class="timeline" id="timeline"></div>
+  <div style="padding:0 14px 16px;"><button class="add-task-row" id="addToTimelineBtn" style="background:var(--paper);border:1px dashed var(--line);border-radius:12px;width:100%;justify-content:center;">＋ Add to timeline</button></div>
 </div>
 
 <div class="view" id="viewWeek">
@@ -193,9 +206,11 @@ button{font-family:inherit;}
 
 <div class="view" id="viewInbox">
   <div class="inbox-wrap" id="inboxWrap"></div>
+  <div style="padding:0 14px 16px;"><button class="add-task-row" id="addAreaBtn" style="background:var(--paper);border:1px dashed var(--line);border-radius:12px;width:100%;justify-content:center;">＋ New area</button></div>
 </div>
 
 <div class="view" id="viewSettings">
+  <div style="padding:14px 14px 0;"><button class="icon-btn" id="settingsBackBtn">‹ Back</button></div>
   <div class="settings-wrap">
     <div class="settings-card">
       <h3>Prayer times</h3>
@@ -209,7 +224,16 @@ button{font-family:inherit;}
     </div>
     <div class="settings-card">
       <h3>About</h3>
-      <div class="settings-note">My Plan — your inbox, timeline and routines in one place. Data is stored only on this device.</div>
+      <div class="settings-note">Planner — your inbox, timeline and routines in one place. Data is stored only on this device, in this browser.</div>
+    </div>
+    <div class="settings-card">
+      <h3>Backup</h3>
+      <div class="settings-note">Your data lives in this browser's local storage. It survives closing the app, restarting your phone, and reopening later — it's only at risk if you clear Safari's site data, use Private Browsing, or switch devices. Export a backup file periodically for real peace of mind.</div>
+      <div class="sheet-actions">
+        <button class="btn btn-ghost" id="exportBtn">Export backup</button>
+        <button class="btn btn-ghost" id="importBtn">Import backup</button>
+      </div>
+      <input type="file" id="importFile" accept="application/json" style="display:none;">
     </div>
   </div>
 </div>
@@ -238,19 +262,48 @@ button{font-family:inherit;}
       <div class="chip" id="chipToday">Today</div>
       <div class="chip" id="chipWhen">When…</div>
     </div>
+    <div class="field" id="deadlineField" style="display:none;">
+      <label>Due date</label>
+      <input type="date" id="fDeadline">
+      <div class="chip-row" style="margin-top:8px;"><div class="chip" id="chipOngoing">Ongoing — no due date</div></div>
+    </div>
     <div class="field" id="areaField"><label>Area</label>
       <select id="fArea"></select>
+    </div>
+    <div class="field" id="noTimeField" style="display:none;">
+      <div class="chip-row"><div class="chip" id="chipNoTime">No specific time — just add to this day's list</div></div>
     </div>
     <div class="row2" id="timeField" style="display:none;">
       <div class="field"><label>Starts</label><input type="time" id="fTime"></div>
       <div class="field"><label>Ends (optional)</label><input type="time" id="fEndTime"></div>
     </div>
+    <div class="field" id="durationField" style="display:none;"><label>Or pick a duration</label>
+      <div class="chip-row" id="durationGroup">
+        <div class="chip" data-mins="15">15m</div>
+        <div class="chip" data-mins="30">30m</div>
+        <div class="chip" data-mins="45">45m</div>
+        <div class="chip" data-mins="60">1h</div>
+        <div class="chip" data-mins="90">1.5h</div>
+      </div>
+    </div>
+    <div class="field"><label>Notes</label><input type="text" id="fNotes" placeholder="Optional context, e.g. ~30 min, location, link"></div>
+    <div class="field" id="colorField" style="display:none;"><label>Priority</label>
+      <div class="chip-row" id="colorGroup"></div>
+      <div class="settings-note" style="margin-top:6px;">Colour = priority, not category — Urgent (won't move) → Optional (can slip easily).</div>
+    </div>
+    <div class="field" id="emojiField" style="display:none;"><label>Icon (auto-suggested — tap to change)</label>
+      <input type="text" id="fEmoji" maxlength="4" style="width:70px;text-align:center;font-size:20px;">
+    </div>
+    <div class="field" id="trackField" style="display:none;">
+      <div class="chip-row">
+        <div class="chip" id="chipTrack">Track completion (checkbox)</div>
+      </div>
+    </div>
     <div class="more-toggle" id="moreToggle">More options</div>
     <div class="more-fields" id="moreFields">
-      <div class="field"><label>Notes</label><input type="text" id="fNotes" placeholder="Optional context"></div>
       <div class="field" id="repeatField" style="display:none;"><label>Repeat</label>
         <select id="fRepeat">
-          <option value="none">Once</option>
+          <option value="none">Just this once</option>
           <option value="daily">Daily</option>
           <option value="weekly">Weekly (choose days)</option>
         </select>
@@ -265,6 +318,41 @@ button{font-family:inherit;}
       <button class="btn btn-danger" id="captureDelete" style="display:none;">Delete</button>
       <button class="btn btn-primary" id="captureSave">Save</button>
     </div>
+  </div>
+</div>
+
+<div class="sheet-backdrop" id="genericModalBackdrop">
+  <div class="sheet" style="max-width:420px;">
+    <div class="sheet-handle"></div>
+    <div id="genericModalMessage" style="font-size:15px;line-height:1.5;margin-bottom:14px;white-space:pre-line;"></div>
+    <input type="text" id="genericModalInput" style="display:none;width:100%;background:var(--paper-2);border:1px solid var(--line);color:var(--ink);padding:10px 11px;border-radius:9px;font-size:14px;margin-bottom:14px;">
+    <div class="sheet-actions">
+      <button class="btn btn-ghost" id="genericModalCancel">Cancel</button>
+      <button class="btn btn-primary" id="genericModalOk">OK</button>
+    </div>
+  </div>
+</div>
+
+<div class="sheet-backdrop" id="subtaskEditBackdrop">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <h2 style="font-size:17px;margin-bottom:14px;">Edit step</h2>
+    <div class="field"><label>Title</label><input type="text" id="stTitle"></div>
+    <div class="field"><label>Note</label><input type="text" id="stNote" placeholder="A short reflection or reminder"></div>
+    <div class="field"><label>Link</label><input type="text" id="stLink" placeholder="https://…"></div>
+    <div class="sheet-actions">
+      <button class="btn btn-danger" id="stDelete">Delete</button>
+      <button class="btn btn-primary" id="stSave">Save</button>
+    </div>
+  </div>
+</div>
+
+<div class="sheet-backdrop" id="choiceModalBackdrop">
+  <div class="sheet" style="max-width:420px;">
+    <div class="sheet-handle"></div>
+    <div id="choiceModalMessage" style="font-size:15px;line-height:1.5;margin-bottom:14px;"></div>
+    <div id="choiceModalButtons" style="display:flex;flex-direction:column;gap:8px;"></div>
+    <button class="btn btn-ghost" id="choiceModalCancel" style="width:100%;margin-top:10px;">Cancel</button>
   </div>
 </div>
 
@@ -284,6 +372,15 @@ const AREAS = [
 ];
 const MORNING_SUBTASKS = ['Morning adhkar','Quran','Supplements','Stretch','Run / Gym','Breakfast'];
 const NIGHT_SUBTASKS = ['Wudu','Al-Mulk','Ayat al-Kursi','Adhkar','Sleep dua'];
+const COLOR_PALETTE = [
+  {name:'Urgent', desc:'Time-critical, do not slip', color:'var(--accent)', dim:'var(--accent-dim)'},
+  {name:'High priority', desc:'Important, protect this slot', color:'var(--gold)', dim:'var(--gold-dim)'},
+  {name:'Standard', desc:'Normal day-to-day', color:'var(--slate)', dim:'var(--slate-dim)'},
+  {name:'Optional', desc:'Low stakes, easy to move', color:'var(--sage)', dim:'var(--sage-dim)'},
+];
+let captureColor = COLOR_PALETTE[2];
+let emojiManuallySet = false;
+let captureTrack = true;
 
 let state = null;
 let viewDate = new Date();
@@ -295,6 +392,7 @@ let captureToday = false;
 
 function pad(n){return n.toString().padStart(2,'0');}
 function fmt12(t){ if(!t) return ''; const [h,m]=t.split(':').map(Number); const hr=((h+11)%12)+1; const ap=h<12?'am':'pm'; return hr+':'+pad(m)+' '+ap; }
+function fmtDate(ds){ if(!ds) return ''; if(ds==='ongoing') return 'Ongoing'; const d=new Date(ds+'T12:00:00'); return d.toLocaleDateString('en-GB',{day:'numeric',month:'short'}); }
 function dstr(d){return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate());}
 function uid(){return 'x'+Date.now()+Math.random().toString(36).slice(2,6);}
 function esc(s){const d=document.createElement('div');d.textContent=s;return d.innerHTML;}
@@ -308,7 +406,7 @@ function defaults(){
       {id:uid(), title:'Look into certifications', areaId:'certs', today:true, completed:false},
     ],
     blocks: [
-      {id:uid(), title:'Run', sub:'~30 min', time:'07:30', icon:'runner', color:'var(--accent)', dim:'var(--accent-dim)', checkable:true, days:[0,1,2,3,4,5,6]},
+      {id:uid(), title:'Gym', sub:'~30 min', time:'07:30', icon:'runner', color:'var(--accent)', dim:'var(--accent-dim)', checkable:true, oneOffDate: dstr(new Date()), days:[]},
       {id:uid(), title:'Work', sub:'', time:'09:00', endTime:'17:00', icon:'work', color:'var(--slate)', dim:'var(--slate-dim)', checkable:false, days:[1,2,3,4,5]},
       {id:uid(), title:'Quran Class', sub:'', time:'18:45', endTime:'19:45', icon:'book', color:'var(--gold)', dim:'var(--gold-dim)', checkable:false, days:[1,3,4]},
       {id:uid(), title:'Class · Sheikh M. Ali', sub:'', time:'20:15', endTime:'21:30', icon:'star', color:'var(--gold)', dim:'var(--gold-dim)', checkable:false, days:[6,0]},
@@ -322,7 +420,27 @@ function defaults(){
     prayerTimes: { fajr:'04:45', dhuhr:'13:17', asr:'16:49', maghrib:'19:58', isha:'21:22' },
   };
 }
-const ICONS = {runner:'🏃',work:'💼',book:'📖',star:'✦',heart:'♥',sun:'☀',moon:'☾'};
+const ICONS = {runner:'🏃',work:'💼',book:'📖',star:'✦',heart:'♥',sun:'☀',moon:'☾',dot:'●'};
+const EMOJI_KEYWORDS = [
+  [['gym','workout','exercise','run','jog'], '🏃'],
+  [['quran','salah','prayer','dua','adhkar','mosque','masjid','islamic','deen'], '🕌'],
+  [['work','meeting','call','email','client'], '💼'],
+  [['read','book','study','cert','course','learn'], '📖'],
+  [['eat','breakfast','lunch','dinner','food'], '🍽️'],
+  [['sleep','rest','night'], '😴'],
+  [['shop','buy','order','grocery'], '🛒'],
+  [['family','wife','home','dinner'], '❤️'],
+  [['gift','shahada','friend'], '🎁'],
+  [['doctor','health','medicine','supplement'], '💊'],
+  [['drive','travel','flight','leave'], '✈️'],
+];
+function suggestEmoji(title){
+  const t = title.toLowerCase();
+  for(const [words, emoji] of EMOJI_KEYWORDS){
+    if(words.some(w=> t.includes(w))) return emoji;
+  }
+  return '●';
+}
 
 async function loadData(){
   try{ const r = await storage.get('lifeplan:state'); state = r ? JSON.parse(r.value) : null; }
@@ -333,17 +451,179 @@ async function loadData(){
 async function save(){ try{ await storage.set('lifeplan:state', JSON.stringify(state)); }catch(e){ console.error(e); } }
 function showToast(msg){ const t=document.getElementById('toast'); t.textContent=msg; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),1500); }
 
+function appConfirm(message){
+  return new Promise(resolve=>{
+    document.getElementById('genericModalMessage').textContent = message;
+    const input = document.getElementById('genericModalInput');
+    input.style.display = 'none';
+    document.getElementById('genericModalBackdrop').classList.add('open');
+    const ok = document.getElementById('genericModalOk');
+    const cancel = document.getElementById('genericModalCancel');
+    function cleanup(result){
+      document.getElementById('genericModalBackdrop').classList.remove('open');
+      ok.onclick=null; cancel.onclick=null;
+      resolve(result);
+    }
+    ok.onclick = ()=>cleanup(true);
+    cancel.onclick = ()=>cleanup(false);
+  });
+}
+function appPrompt(message, defaultValue){
+  return new Promise(resolve=>{
+    document.getElementById('genericModalMessage').textContent = message;
+    const input = document.getElementById('genericModalInput');
+    input.style.display = 'block';
+    input.value = defaultValue || '';
+    document.getElementById('genericModalBackdrop').classList.add('open');
+    setTimeout(()=> input.focus(), 100);
+    const ok = document.getElementById('genericModalOk');
+    const cancel = document.getElementById('genericModalCancel');
+    function cleanup(result){
+      document.getElementById('genericModalBackdrop').classList.remove('open');
+      ok.onclick=null; cancel.onclick=null;
+      resolve(result);
+    }
+    ok.onclick = ()=>cleanup(input.value);
+    cancel.onclick = ()=>cleanup(null);
+  });
+}
+
+function appChoice(message, options){
+  return new Promise(resolve=>{
+    document.getElementById('choiceModalMessage').textContent = message;
+    const wrap = document.getElementById('choiceModalButtons');
+    wrap.innerHTML = options.map(o=>`<button class="btn btn-primary" data-choice="${o.key}" style="width:100%;">${o.label}</button>`).join('');
+    document.getElementById('choiceModalBackdrop').classList.add('open');
+    const cancelBtn = document.getElementById('choiceModalCancel');
+    function cleanup(result){
+      document.getElementById('choiceModalBackdrop').classList.remove('open');
+      wrap.querySelectorAll('[data-choice]').forEach(b=>b.onclick=null);
+      cancelBtn.onclick=null;
+      resolve(result);
+    }
+    wrap.querySelectorAll('[data-choice]').forEach(b=>{ b.onclick = ()=>cleanup(b.dataset.choice); });
+    cancelBtn.onclick = ()=>cleanup(null);
+  });
+}
+
+async function removeBlockWithScope(blockId, forDate){
+  const block = state.blocks.find(x=>x.id===blockId);
+  if(!block) return false;
+  const isRecurring = !block.oneOffDate && block.days && block.days.length > 0;
+  if(!isRecurring){
+    state.blocks = state.blocks.filter(x=>x.id!==blockId);
+    await save();
+    showToast('Removed from calendar');
+    return true;
+  }
+  const action = await appChoice(`"${block.title}" repeats. What would you like to do?`, [
+    {key:'skip', label:'Remove just this day'},
+    {key:'future', label:'Remove this and all future days'},
+    {key:'all', label:'Remove entirely (every day)'},
+  ]);
+  if(!action) return false;
+  if(action==='skip'){
+    if(!block.exceptionDates) block.exceptionDates = [];
+    block.exceptionDates.push(forDate);
+    await save();
+    showToast('Removed for this day only');
+  } else if(action==='future'){
+    const dayBefore = new Date(forDate+'T12:00:00'); dayBefore.setDate(dayBefore.getDate()-1);
+    block.endDate = dstr(dayBefore);
+    await save();
+    showToast('Ended — future days cleared');
+  } else {
+    state.blocks = state.blocks.filter(x=>x.id!==blockId);
+    await save();
+    showToast('Removed entirely');
+  }
+  return true;
+}
+
+function getSubtaskOwner(kind, id){
+  return kind==='routine' ? state.routines.find(x=>x.id===id) : state.blocks.find(x=>x.id===id);
+}
+let stEditing = null;
+function openSubtaskEditor(kind, ownerId, idx){
+  const owner = getSubtaskOwner(kind, ownerId);
+  if(!owner) return;
+  stEditing = {kind, ownerId, idx};
+  document.getElementById('stTitle').value = owner.subtasks[idx] || '';
+  document.getElementById('stNote').value = (owner.subtaskNotes && owner.subtaskNotes[idx]) || '';
+  document.getElementById('stLink').value = (owner.subtaskLinks && owner.subtaskLinks[idx]) || '';
+  document.getElementById('subtaskEditBackdrop').classList.add('open');
+  setTimeout(()=> document.getElementById('stTitle').focus(), 100);
+}
+function reindexMapAfterDelete(map, deletedIdx){
+  if(!map) return {};
+  const out = {};
+  Object.keys(map).map(Number).sort((a,b)=>a-b).forEach(k=>{
+    if(k < deletedIdx) out[k] = map[k];
+    else if(k > deletedIdx) out[k-1] = map[k];
+  });
+  return out;
+}
+document.getElementById('stSave').onclick = async ()=>{
+  if(!stEditing) return;
+  const owner = getSubtaskOwner(stEditing.kind, stEditing.ownerId);
+  const title = document.getElementById('stTitle').value.trim();
+  if(!title){ showToast('Give it a title'); return; }
+  owner.subtasks[stEditing.idx] = title;
+  const note = document.getElementById('stNote').value.trim();
+  const link = document.getElementById('stLink').value.trim();
+  if(!owner.subtaskNotes) owner.subtaskNotes = {};
+  if(!owner.subtaskLinks) owner.subtaskLinks = {};
+  if(note) owner.subtaskNotes[stEditing.idx] = note; else delete owner.subtaskNotes[stEditing.idx];
+  if(link) owner.subtaskLinks[stEditing.idx] = link; else delete owner.subtaskLinks[stEditing.idx];
+  await save();
+  document.getElementById('subtaskEditBackdrop').classList.remove('open');
+  renderTimeline();
+  showToast('Saved');
+};
+document.getElementById('stDelete').onclick = async ()=>{
+  if(!stEditing) return;
+  const owner = getSubtaskOwner(stEditing.kind, stEditing.ownerId);
+  owner.subtasks.splice(stEditing.idx, 1);
+  owner.subtaskNotes = reindexMapAfterDelete(owner.subtaskNotes, stEditing.idx);
+  owner.subtaskLinks = reindexMapAfterDelete(owner.subtaskLinks, stEditing.idx);
+  await save();
+  document.getElementById('subtaskEditBackdrop').classList.remove('open');
+  renderTimeline();
+  showToast('Step deleted');
+};
+document.getElementById('subtaskEditBackdrop').onclick = (e)=>{ if(e.target.id==='subtaskEditBackdrop') e.currentTarget.classList.remove('open'); };
+
 function renderHeader(){
   document.getElementById('hMain').textContent = viewDate.toLocaleDateString('en-GB',{weekday:'short', day:'numeric'});
   document.getElementById('hSub').textContent = viewDate.toLocaleDateString('en-GB',{month:'long', year:'numeric'});
+  const wrap = document.getElementById('todayJumpWrap');
+  wrap.innerHTML = dstr(viewDate)===dstr(new Date()) ? '' : '<span class="wd-chip" id="jumpTodayBtn" style="cursor:pointer;color:var(--accent);background:var(--accent-dim);">↺ Jump to today</span>';
+  const jumpBtn = document.getElementById('jumpTodayBtn');
+  if(jumpBtn) jumpBtn.onclick = ()=>{ viewDate = new Date(); renderAll(); };
+
+  const ds = dstr(viewDate);
+  const hasLeave = state.blocks.some(b=>b.oneOffDate===ds && b.isLeave);
+  const leaveBtn = document.getElementById('markLeaveBtn');
+  leaveBtn.textContent = hasLeave ? '🏖 Leave marked — tap to remove' : '🏖 Mark this day as leave';
+  leaveBtn.style.background = hasLeave ? 'var(--leave-dim)' : '';
+  leaveBtn.style.color = hasLeave ? 'var(--leave)' : '';
 }
 function itemsForDate(d){
-  const dow = d.getDay();
-  return { blocks: state.blocks.filter(b=>b.days.includes(dow)), routines: state.routines.filter(r=>r.days.includes(dow)) };
+  const dow = d.getDay(); const ds = dstr(d);
+  return {
+    blocks: state.blocks.filter(b=>{
+      if(b.oneOffDate) return b.oneOffDate===ds;
+      if(b.exceptionDates && b.exceptionDates.includes(ds)) return false;
+      if(b.leaveDates && b.leaveDates.includes(ds)) return false;
+      if(b.endDate && ds > b.endDate) return false;
+      return b.days.includes(dow);
+    }),
+    routines: state.routines.filter(r=>r.days.includes(dow))
+  };
 }
 function renderStrip(){
   const strip = document.getElementById('strip');
-  const start = new Date(viewDate); start.setDate(start.getDate() - start.getDay() + 1);
+  const start = new Date(viewDate); start.setDate(start.getDate() - ((start.getDay()+6)%7));
   let html='';
   for(let i=0;i<7;i++){
     const d = new Date(start); d.setDate(start.getDate()+i);
@@ -356,6 +636,32 @@ function renderStrip(){
   }
   strip.innerHTML = html;
   strip.querySelectorAll('.strip-day').forEach(el=>{ el.onclick=()=>{ viewDate=new Date(el.dataset.date+'T12:00:00'); renderAll(); }; });
+}
+
+function renderSubtaskSection(kind, owner, ds){
+  let html = `<div class="subtasks">`;
+  owner.subtasks.forEach((s,i)=>{
+    const key = ds+'::'+(kind==='routine'?'routine':'blocksub')+'::'+owner.id+'::'+i;
+    const d=!!state.completions[key];
+    const linkUrl = owner.subtaskLinks && owner.subtaskLinks[i];
+    const noteText = owner.subtaskNotes && owner.subtaskNotes[i];
+    let domain = '';
+    if(linkUrl){ try{ domain = new URL(linkUrl).hostname.replace(/^www\./,''); }catch(e){ domain = linkUrl; } }
+    let metaRow = '';
+    if(noteText || linkUrl){
+      metaRow = `<div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;padding:2px 0 6px 28px;">`;
+      if(noteText) metaRow += `<span class="wd-chip">📝 ${esc(noteText)}</span>`;
+      if(linkUrl) metaRow += `<a href="${esc(linkUrl)}" target="_blank" rel="noopener" class="wd-chip" style="text-decoration:none;" onclick="event.stopPropagation();">🔗 ${esc(domain)}</a>`;
+      metaRow += `</div>`;
+    }
+    html += `<div class="subtask-row ${d?'done':''}"><div class="subtask-check ${d?'done':''}" data-subtoggle="${key}"></div><span data-subedit="${kind}::${owner.id}::${i}">${esc(s)}</span></div>${metaRow}`;
+  });
+  html += `<div class="subtask-add"><input type="text" placeholder="Add step…" id="newSubInput-${owner.id}"><button data-subadd="${kind}::${owner.id}">Add</button></div>`;
+  if(kind==='routine'){
+    html += `<div class="routine-edit-link" data-routinemeta="${owner.id}">Edit time / days / delete routine</div>`;
+  }
+  html += `</div>`;
+  return html;
 }
 
 function renderTimeline(){
@@ -372,61 +678,85 @@ function renderTimeline(){
   let entries = [];
   prayers.forEach(p=> entries.push({type:'prayer', time:p.time, data:p}));
   blocks.forEach(b=> entries.push({type:'block', time:b.time, data:b}));
-  routines.forEach(r=> entries.push({type:'routine', time:r.time, data:r}));
+  routines.forEach(r=>{
+    const ov = r.overrides && r.overrides[ds];
+    const effective = ov ? {...r, title: ov.title, time: ov.time} : r;
+    entries.push({type:'routine', time: effective.time, data: effective, baseId: r.id});
+  });
   entries.sort((a,b)=> a.time.localeCompare(b.time));
 
   const now = new Date();
   const nowStr = pad(now.getHours())+':'+pad(now.getMinutes());
   const isToday = dstr(now)===ds;
-  let html=''; let nowInserted=false;
-  entries.forEach(e=>{
+  let html=''; let nowInserted=false; let prevTime=null;
+  entries.forEach((e,idx)=>{
     if(isToday && !nowInserted && e.time > nowStr){ html += nowRowHtml(nowStr); nowInserted=true; }
+    if(prevTime){
+      const [ph,pm]=prevTime.split(':').map(Number);
+      const suggested = pad(Math.floor((ph*60+pm+15)/60)%24)+':'+pad((ph*60+pm+15)%60);
+      html += `<div class="gap-add" data-gapadd="${suggested}"><span>＋</span></div>`;
+    }
+    prevTime = e.time;
     if(e.type==='prayer'){
       html += `<div class="trow"><div class="ttime">${e.time}</div>
         <div class="trail"><div class="ticon" style="background:var(--sage-dim);color:var(--sage);">🕌</div></div>
         <div class="tcard prayer"><div><div class="ttitle" style="font-size:13.5px;">${e.data.name}</div><div class="tsub">${e.data.sub}</div></div><div class="tstatus">🕌</div></div></div>`;
     } else if(e.type==='block'){
       const b=e.data; const doneKey=ds+'::block::'+b.id; const done=!!state.completions[doneKey];
+      if(!b.subtasks) b.subtasks = [];
       b._displaySub = b.endTime ? (fmt12(b.time)+' – '+fmt12(b.endTime)) : (b.sub||'');
+      const hasSubtasks = b.subtasks.length > 0;
+      const blockExpanded = state._expandedBlock === b.id;
       const statusHtml = b.checkable
         ? `<div class="status-circle ${done?'checked':''}" data-blockcheck="${b.id}"></div>`
-        : `<div class="status-circle" style="border-color:${b.color}"></div>`;
+        : '';
+      const stepsBadge = hasSubtasks
+        ? `<span class="progress-badge" style="color:${b.color};font-size:12px;">${b.subtasks.filter((s,i)=>state.completions[ds+'::blocksub::'+b.id+'::'+i]).length}/${b.subtasks.length}</span>`
+        : '';
       html += `<div class="trow"><div class="ttime">${b.time}</div>
-        <div class="trail"><div class="ticon" style="background:${b.dim};color:${b.color};">${ICONS[b.icon]||'•'}</div></div>
-        <div class="tcard" data-blockedit="${b.id}"><div><div class="ttitle">${esc(b.title)}</div><div class="tsub">${esc(b._displaySub||'')}</div></div><div class="tstatus" data-stopprop="1">${statusHtml}</div></div></div>`;
+        <div class="trail"><div class="ticon" style="background:${b.dim};color:${b.color};">${ICONS[b.icon] || b.icon || '•'}</div></div>
+        <div class="tcard" data-blockedit="${b.id}" data-swipeblock="${b.id}"><div><div class="ttitle">${esc(b.title)}</div><div class="tsub">${esc(b._displaySub||'')}</div></div>
+        <div class="tstatus" style="display:flex;align-items:center;gap:6px;" data-stopprop="1">${statusHtml}<button class="chev" data-blocksteps="${b.id}" style="background:none;border:none;">${stepsBadge} ${blockExpanded?'▾':'☰'}</button></div></div></div>`;
+      if(blockExpanded) html += renderSubtaskSection('block', b, ds);
     } else if(e.type==='routine'){
       const r=e.data; const doneCount = r.subtasks.filter((s,i)=> state.completions[ds+'::routine::'+r.id+'::'+i]).length;
       const expanded = state._expanded === r.id;
       html += `<div class="trow"><div class="ttime">${r.time}</div>
-        <div class="trail"><div class="ticon" style="background:${r.dim};color:${r.color};">${ICONS[r.icon]||'•'}</div></div>
+        <div class="trail"><div class="ticon" style="background:${r.dim};color:${r.color};">${ICONS[r.icon] || r.icon || '•'}</div></div>
         <div class="tcard" data-routinetoggle="${r.id}"><div><div class="ttitle">${esc(r.title)}</div><div class="tsub">${doneCount} / ${r.subtasks.length} complete</div></div>
         <div class="tstatus" style="display:flex;align-items:center;"><span class="progress-badge" style="color:${r.color}">${doneCount}/${r.subtasks.length}</span><span class="chev">${expanded?'▾':'▸'}</span></div></div></div>`;
-      if(expanded){
-        html += `<div class="subtasks">`;
-        r.subtasks.forEach((s,i)=>{
-          const key = ds+'::routine::'+r.id+'::'+i; const d=!!state.completions[key];
-          html += `<div class="subtask-row ${d?'done':''}"><div class="subtask-check ${d?'done':''}" data-subtoggle="${key}"></div><span>${esc(s)}</span><button class="subtask-del" data-subdel="${r.id}::${i}">×</button></div>`;
-        });
-        html += `<div class="subtask-add"><input type="text" placeholder="Add step…" id="newSubInput-${r.id}"><button data-subadd="${r.id}">Add</button></div>`;
-        html += `<div class="routine-edit-link" data-routinemeta="${r.id}">Edit time / days / delete routine</div>`;
-        html += `</div>`;
-      }
+      if(expanded) html += renderSubtaskSection('routine', r, ds);
     }
   });
   if(isToday && !nowInserted){ html += nowRowHtml(nowStr); }
   document.getElementById('timeline').innerHTML = html || '<div style="text-align:center;color:var(--ink-muted);padding:40px 20px;">Nothing scheduled for this day.</div>';
 
+  document.querySelectorAll('[data-gapadd]').forEach(el=>{
+    el.onclick = ()=> openNewBlock(el.dataset.gapadd);
+  });
   document.querySelectorAll('[data-routinetoggle]').forEach(el=>{
     el.onclick = (ev)=>{ if(ev.target.closest('[data-stopprop]')) return; state._expanded = (state._expanded===el.dataset.routinetoggle)?null:el.dataset.routinetoggle; renderTimeline(); };
+  });
+  document.querySelectorAll('[data-blocksteps]').forEach(el=>{
+    el.onclick = (ev)=>{ ev.stopPropagation(); state._expandedBlock = (state._expandedBlock===el.dataset.blocksteps)?null:el.dataset.blocksteps; renderTimeline(); };
   });
   document.querySelectorAll('[data-subtoggle]').forEach(el=>{
     el.onclick = async (ev)=>{ ev.stopPropagation(); const k=el.dataset.subtoggle; state.completions[k]=!state.completions[k]; await save(); renderTimeline(); };
   });
-  document.querySelectorAll('[data-subdel]').forEach(el=>{
-    el.onclick = async (ev)=>{ ev.stopPropagation(); const [rid,idx]=el.dataset.subdel.split('::'); const r=state.routines.find(x=>x.id===rid); r.subtasks.splice(parseInt(idx),1); await save(); renderTimeline(); };
+  document.querySelectorAll('[data-subedit]').forEach(el=>{
+    el.onclick = (ev)=>{ ev.stopPropagation(); const [kind,ownerId,idx]=el.dataset.subedit.split('::'); openSubtaskEditor(kind, ownerId, parseInt(idx)); };
   });
   document.querySelectorAll('[data-subadd]').forEach(el=>{
-    el.onclick = async (ev)=>{ ev.stopPropagation(); const rid=el.dataset.subadd; const input=document.getElementById('newSubInput-'+rid); const v=input.value.trim(); if(!v) return; const r=state.routines.find(x=>x.id===rid); r.subtasks.push(v); await save(); renderTimeline(); };
+    el.onclick = async (ev)=>{
+      ev.stopPropagation();
+      const [kind,ownerId]=el.dataset.subadd.split('::');
+      const input=document.getElementById('newSubInput-'+ownerId);
+      const v=input.value.trim(); if(!v) return;
+      const owner = getSubtaskOwner(kind, ownerId);
+      if(!owner.subtasks) owner.subtasks=[];
+      owner.subtasks.push(v);
+      await save(); renderTimeline();
+    };
   });
   document.querySelectorAll('[data-routinemeta]').forEach(el=>{
     el.onclick = (ev)=>{ ev.stopPropagation(); openEditRoutineMeta(el.dataset.routinemeta); };
@@ -437,16 +767,43 @@ function renderTimeline(){
   document.querySelectorAll('[data-blockedit]').forEach(el=>{
     el.onclick = (ev)=>{ if(ev.target.closest('[data-stopprop]')) return; openEditBlock(el.dataset.blockedit); };
   });
+  document.querySelectorAll('[data-swipeblock]').forEach(card=>{
+    let sx=null, moved=false;
+    card.addEventListener('touchstart', e=>{ sx=e.touches[0].clientX; moved=false; card.style.transition='none'; }, {passive:true});
+    card.addEventListener('touchmove', e=>{
+      if(sx===null) return;
+      const dx = e.touches[0].clientX - sx;
+      if(Math.abs(dx) > 8) moved = true;
+      if(dx < 0) card.style.transform = `translateX(${Math.max(dx,-90)}px)`;
+    }, {passive:true});
+    card.addEventListener('touchend', async e=>{
+      if(sx===null) return;
+      const dx = e.changedTouches[0].clientX - sx;
+      card.style.transition='transform 0.2s ease';
+      if(dx < -60){
+        const id = card.dataset.swipeblock;
+        card.style.transform = 'translateX(-40%)';
+        const removed = await removeBlockWithScope(id, dstr(viewDate));
+        if(removed) renderTimeline(); else card.style.transform = 'translateX(0)';
+      } else {
+        card.style.transform = 'translateX(0)';
+      }
+      sx=null;
+    }, {passive:true});
+  });
 }
 function nowRowHtml(nowStr){ return `<div class="now-row"><div class="now-time">${nowStr}</div><div class="now-line"></div><div class="now-label">NOW</div></div>`; }
 
 function renderDrawer(){
-  const todayItems = state.items.filter(i=> i.today && !i.completed);
-  document.getElementById('drawerTitle').textContent = `${todayItems.length} THING${todayItems.length===1?'':'S'} TO DO TODAY`;
+  const ds = dstr(viewDate);
+  const isActualToday = ds === dstr(new Date());
+  const todayItems = state.items.filter(i=> !i.completed && ((i.today && isActualToday) || i.dateTag===ds));
+  const label = isActualToday ? 'TO DO TODAY' : `TO DO — ${viewDate.toLocaleDateString('en-GB',{weekday:'short', day:'numeric', month:'short'}).toUpperCase()}`;
+  document.getElementById('drawerTitle').textContent = `${todayItems.length} THING${todayItems.length===1?'':'S'} ${label}`;
   let html='';
   todayItems.forEach(i=>{
-    const area = state.areas.find(a=>a.id===i.areaId);
-    html += `<div class="dtask"><div class="dcheck" data-itemdone="${i.id}"></div><span data-itemedit="${i.id}">${esc(i.title)}</span><div class="dot" style="background:${area?area.color:'var(--ink-muted)'}"></div></div>`;
+    const area = i.areaId ? state.areas.find(a=>a.id===i.areaId) : null;
+    html += `<div class="dtask"><div class="dcheck" data-itemdone="${i.id}"></div><span data-itemedit="${i.id}">${esc(i.title)}</span><div class="dot" style="background:${area?area.color:'var(--ink-faint)'}"></div></div>`;
   });
   html += `<div class="add-task-row" id="drawerAddTask">＋ Add task</div>`;
   document.getElementById('drawerBody').innerHTML = html;
@@ -467,17 +824,34 @@ document.getElementById('drawerHead').onclick = ()=>{
 };
 
 function renderWeek(){
-  const start = new Date(viewDate); start.setDate(start.getDate() - start.getDay() + 1);
+  const start = new Date(viewDate); start.setDate(start.getDate() - ((start.getDay()+6)%7));
   let html='';
   for(let i=0;i<7;i++){
     const d = new Date(start); d.setDate(start.getDate()+i);
-    const isToday = dstr(d)===dstr(new Date());
+    const ds = dstr(d);
+    const isToday = ds===dstr(new Date());
     const {blocks, routines} = itemsForDate(d);
-    const chips = [...routines.map(r=>r.title), ...blocks.map(b=>b.title)];
-    html += `<div class="week-day"><div class="week-day-head"><div class="wd-date ${isToday?'today':''}">${DOW[d.getDay()]} ${d.getDate()}</div><div class="wd-count">${chips.length} scheduled</div></div>
-      <div class="wd-blocks">${chips.map(c=>`<div class="wd-chip">${esc(c)}</div>`).join('') || '<div class="wd-chip">Free</div>'}</div></div>`;
+    const rows = [
+      ...routines.map(r=>{ const ov = r.overrides && r.overrides[ds]; return {time: ov?ov.time:r.time, title: ov?ov.title:r.title, kind:'routine'}; }),
+      ...blocks.map(b=> ({time:b.time, title:b.title, kind:'block', endTime:b.endTime})),
+    ].sort((a,b)=> a.time.localeCompare(b.time));
+    html += `<div class="week-day" data-weekday="${ds}" style="cursor:pointer;"><div class="week-day-head"><div class="wd-date ${isToday?'today':''}">${DOW[d.getDay()]} ${d.getDate()}</div><div class="wd-count">${rows.length} scheduled</div></div>`;
+    if(rows.length){
+      html += `<div style="display:flex;flex-direction:column;gap:4px;">`;
+      rows.forEach(r=>{
+        const timeLabel = fmt12(r.time) + (r.endTime ? ' – '+fmt12(r.endTime) : '');
+        html += `<div style="display:flex;gap:8px;font-size:12px;"><span class="mono" style="color:var(--ink-faint);min-width:78px;">${esc(timeLabel)}</span><span style="color:var(--ink);">${esc(r.title)}</span></div>`;
+      });
+      html += `</div>`;
+    } else {
+      html += `<div class="wd-chip" style="display:inline-block;">Free</div>`;
+    }
+    html += `</div>`;
   }
   document.getElementById('weekWrap').innerHTML = html;
+  document.querySelectorAll('[data-weekday]').forEach(el=>{
+    el.onclick = ()=>{ viewDate = new Date(el.dataset.weekday+'T12:00:00'); document.querySelector('.nav-item[data-view="today"]').click(); };
+  });
 }
 
 function renderInbox(){
@@ -485,10 +859,10 @@ function renderInbox(){
   state.areas.forEach(a=>{
     const items = state.items.filter(i=> i.areaId===a.id && !i.completed);
     const openState = state._areaOpen===a.id;
-    html += `<div class="area-card"><div class="area-head" data-areatoggle="${a.id}">
+    html += `<div class="area-card" data-swipearea="${a.id}"><div class="area-head" data-areatoggle="${a.id}">
         <div class="area-name"><span class="dot" style="background:${a.color}"></span>${a.name}</div><div class="area-count">${items.length}</div></div>
       <div class="area-items ${openState?'open':''}">
-        ${items.map(i=>`<div class="area-item"><span data-itemedit="${i.id}">${esc(i.title)}</span><button class="promote" data-promote="${i.id}">Schedule</button><button class="idel" data-idel="${i.id}">×</button></div>`).join('')}
+        ${items.map(i=>`<div class="area-item" data-swipeid="${i.id}"><span data-itemedit="${i.id}">${esc(i.title)}${i.deadline?` <span class="wd-chip" style="margin-left:4px;">Due ${fmtDate(i.deadline)}</span>`:''}</span><button class="promote" data-promote="${i.id}">Schedule</button><button class="idel" data-idel="${i.id}">×</button></div>`).join('')}
         <div class="area-add"><input type="text" placeholder="New item…" data-areainput="${a.id}"><button data-areaaddbtn="${a.id}">Add</button></div>
       </div></div>`;
   });
@@ -505,6 +879,61 @@ function renderInbox(){
     el.onclick = async ()=>{ state.items = state.items.filter(x=>x.id!==el.dataset.idel); await save(); renderInbox(); renderDrawer(); showToast('Deleted'); };
   });
   document.querySelectorAll('[data-itemedit]').forEach(el=>{ el.onclick = ()=> openEditItem(el.dataset.itemedit); });
+  document.querySelectorAll('[data-swipearea]').forEach(card=>{
+    let sx=null;
+    card.addEventListener('touchstart', e=>{ sx=e.touches[0].clientX; card.style.transition='none'; }, {passive:true});
+    card.addEventListener('touchmove', e=>{
+      if(sx===null) return;
+      const dx = e.touches[0].clientX - sx;
+      if(dx > 0) card.style.transform = `translateX(${Math.min(dx,90)}px)`;
+    }, {passive:true});
+    card.addEventListener('touchend', async e=>{
+      if(sx===null) return;
+      const dx = e.changedTouches[0].clientX - sx;
+      card.style.transition='transform 0.2s ease';
+      if(dx > 80){
+        const id = card.dataset.swipearea;
+        const area = state.areas.find(x=>x.id===id);
+        const count = state.items.filter(i=>i.areaId===id).length;
+        const msg = count>0 ? `Delete "${area.name}" and its ${count} item(s)?` : `Delete "${area.name}"?`;
+        if(await appConfirm(msg)){
+          state.items = state.items.filter(i=>i.areaId!==id);
+          state.areas = state.areas.filter(x=>x.id!==id);
+          await save(); renderInbox(); renderDrawer(); showToast('Area deleted');
+        } else {
+          card.style.transform = 'translateX(0)';
+        }
+      } else {
+        card.style.transform = 'translateX(0)';
+      }
+      sx=null;
+    }, {passive:true});
+  });
+  document.querySelectorAll('[data-swipeid]').forEach(row=>{
+    let sx=null;
+    row.addEventListener('touchstart', e=>{ sx=e.touches[0].clientX; row.style.transition='none'; }, {passive:true});
+    row.addEventListener('touchmove', e=>{
+      if(sx===null) return;
+      const dx = e.touches[0].clientX - sx;
+      if(dx > 0) row.style.transform = `translateX(${Math.min(dx,90)}px)`;
+    }, {passive:true});
+    row.addEventListener('touchend', async e=>{
+      if(sx===null) return;
+      const dx = e.changedTouches[0].clientX - sx;
+      row.style.transition='transform 0.2s ease';
+      if(dx > 80){
+        row.style.transform = 'translateX(100%)';
+        const id = row.dataset.swipeid;
+        setTimeout(async ()=>{
+          state.items = state.items.filter(x=>x.id!==id);
+          await save(); renderInbox(); renderDrawer(); showToast('Deleted');
+        }, 150);
+      } else {
+        row.style.transform = 'translateX(0)';
+      }
+      sx=null;
+    }, {passive:true});
+  });
 }
 
 function renderSettings(){
@@ -526,17 +955,89 @@ document.getElementById('savePrayerBtn').onclick = async ()=>{
   await save(); renderTimeline(); showToast('Prayer times updated');
 };
 
-function renderAll(){ renderHeader(); renderStrip(); renderTimeline(); renderDrawer(); renderWeek(); renderInbox(); renderSettings(); }
+document.getElementById('exportBtn').onclick = ()=>{
+  const blob = new Blob([JSON.stringify(state, null, 2)], {type:'application/json'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = 'my-plan-backup-'+dstr(new Date())+'.json';
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+  showToast('Backup downloaded');
+};
+document.getElementById('importBtn').onclick = ()=> document.getElementById('importFile').click();
+document.getElementById('importFile').onchange = (e)=>{
+  const file = e.target.files[0]; if(!file) return;
+  const reader = new FileReader();
+  reader.onload = async (ev)=>{
+    try{
+      const imported = JSON.parse(ev.target.result);
+      if(!imported.items || !imported.blocks){ showToast('That file doesn\'t look like a backup'); return; }
+      state = imported;
+      await save();
+      renderAll();
+      showToast('Backup restored');
+    }catch(err){ showToast('Could not read that file'); }
+  };
+  reader.readAsText(file);
+};
 
+function renderAll(){ renderHeader(); renderStrip(); renderTimeline(); renderDrawer(); renderWeek(); renderInbox(); renderSettings(); }
+document.getElementById('prevWeekBtn').onclick = ()=>{ viewDate.setDate(viewDate.getDate()-7); renderAll(); };
+document.getElementById('nextWeekBtn').onclick = ()=>{ viewDate.setDate(viewDate.getDate()+7); renderAll(); };
+document.getElementById('markLeaveBtn').onclick = async ()=>{
+  const ds = dstr(viewDate);
+  const existing = state.blocks.find(b=>b.oneOffDate===ds && b.isLeave);
+  if(existing){
+    state.blocks = state.blocks.filter(b=>b.id!==existing.id);
+    state.blocks.forEach(b=>{
+      if(b.leaveDates) b.leaveDates = b.leaveDates.filter(d=>d!==ds);
+    });
+    await save(); renderAll(); showToast('Leave removed — that day\'s schedule is back');
+  } else {
+    const dow = viewDate.getDay();
+    const affected = state.blocks.filter(b=> !b.oneOffDate && !b.isLeave && b.days && b.days.includes(dow)
+      && !(b.exceptionDates && b.exceptionDates.includes(ds)) && !(b.endDate && ds > b.endDate));
+    affected.forEach(b=>{ if(!b.leaveDates) b.leaveDates=[]; if(!b.leaveDates.includes(ds)) b.leaveDates.push(ds); });
+    state.blocks.push({
+      id: uid(), title:'Leave / Holiday', sub:'All day', time:'00:01', endTime:null,
+      icon:'🏖', color:'var(--leave)', dim:'var(--leave-dim)', checkable:false,
+      oneOffDate: ds, days:[], isLeave:true,
+    });
+    await save(); renderAll();
+    showToast(affected.length ? `Marked as leave — cleared ${affected.length} scheduled item(s)` : 'Marked as leave');
+  }
+};
+
+// Swipe left/right on the Today view to move a day at a time — the quick way through the timetable
+(function(){
+  let sx=null, sy=null;
+  const el = document.getElementById('viewToday');
+  el.addEventListener('touchstart', e=>{ sx=e.touches[0].clientX; sy=e.touches[0].clientY; }, {passive:true});
+  el.addEventListener('touchend', e=>{
+    if(sx===null) return;
+    const dx = e.changedTouches[0].clientX - sx;
+    const dy = e.changedTouches[0].clientY - sy;
+    if(Math.abs(dx) > 70 && Math.abs(dx) > Math.abs(dy)*1.5){
+      viewDate.setDate(viewDate.getDate() + (dx<0 ? 1 : -1));
+      renderAll();
+    }
+    sx=null; sy=null;
+  }, {passive:true});
+})();
+
+let currentView = 'today';
 document.querySelectorAll('.nav-item[data-view]').forEach(el=>{
   el.onclick = ()=>{
+    currentView = el.dataset.view;
     document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active')); el.classList.add('active');
     document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
     document.getElementById('view'+el.dataset.view.charAt(0).toUpperCase()+el.dataset.view.slice(1)).classList.add('active');
     document.getElementById('drawer').style.display = el.dataset.view==='today' ? 'block':'none';
   };
 });
+let viewBeforeSettings = 'today';
 function openSettingsView(){
+  viewBeforeSettings = currentView;
   document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
   document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
   document.getElementById('viewSettings').classList.add('active');
@@ -544,6 +1045,10 @@ function openSettingsView(){
 }
 document.getElementById('navSettings').onclick = openSettingsView;
 document.getElementById('settingsBtn').onclick = openSettingsView;
+document.getElementById('settingsBackBtn').onclick = ()=>{
+  const target = document.querySelector(`.nav-item[data-view="${viewBeforeSettings}"]`);
+  if(target) target.click(); else document.querySelector('.nav-item[data-view="today"]').click();
+};
 
 // ---- Unified edit/capture sheet ----
 const dowGroup = document.getElementById('dowGroup');
@@ -554,6 +1059,52 @@ dowGroup.querySelectorAll('.dow').forEach(el=>{
 document.getElementById('fRepeat').onchange = (e)=>{ captureRepeat=e.target.value; document.getElementById('dowField').style.display = captureRepeat==='weekly'?'block':'none'; };
 document.getElementById('moreToggle').onclick = ()=> document.getElementById('moreFields').classList.toggle('open');
 document.getElementById('chipToday').onclick = function(){ captureToday=!captureToday; this.classList.toggle('selected'); };
+document.getElementById('chipWhen').onclick = function(){
+  const f = document.getElementById('deadlineField');
+  const showing = f.style.display === 'block';
+  f.style.display = showing ? 'none' : 'block';
+  this.classList.toggle('selected', !showing);
+};
+document.getElementById('chipOngoing').onclick = function(){
+  const dInput = document.getElementById('fDeadline');
+  const isOngoing = this.classList.toggle('selected');
+  dInput.disabled = isOngoing;
+  if(isOngoing) dInput.value = '';
+};
+
+const colorGroup = document.getElementById('colorGroup');
+colorGroup.innerHTML = COLOR_PALETTE.map(c=>`<div class="chip" data-color="${c.name}" style="border-color:${c.color};"><span class="dot" style="background:${c.color};display:inline-block;margin-right:5px;vertical-align:middle;"></span>${c.name}</div>`).join('');
+function refreshColorChips(){ colorGroup.querySelectorAll('.chip').forEach(ch=> ch.classList.toggle('selected', ch.dataset.color===captureColor.name)); }
+colorGroup.querySelectorAll('.chip').forEach(ch=>{ ch.onclick = ()=>{ captureColor = COLOR_PALETTE.find(c=>c.name===ch.dataset.color); refreshColorChips(); }; });
+refreshColorChips();
+
+document.getElementById('chipTrack').onclick = function(){ captureTrack = !captureTrack; this.classList.toggle('selected'); };
+document.getElementById('captureInput').addEventListener('input', (e)=>{
+  if(document.getElementById('emojiField').style.display==='block' && !emojiManuallySet){
+    document.getElementById('fEmoji').value = suggestEmoji(e.target.value);
+  }
+});
+document.getElementById('fEmoji').addEventListener('input', ()=>{ emojiManuallySet = true; });
+let captureNoTime = false;
+document.getElementById('chipNoTime').onclick = function(){
+  captureNoTime = this.classList.toggle('selected');
+  document.getElementById('timeField').style.display = captureNoTime ? 'none' : 'flex';
+  document.getElementById('durationField').style.display = captureNoTime ? 'none' : 'block';
+};
+
+const durationGroup = document.getElementById('durationGroup');
+durationGroup.querySelectorAll('.chip').forEach(ch=>{
+  ch.onclick = ()=>{
+    durationGroup.querySelectorAll('.chip').forEach(c=>c.classList.remove('selected'));
+    ch.classList.add('selected');
+    const startVal = document.getElementById('fTime').value || '09:00';
+    const mins = parseInt(ch.dataset.mins);
+    const [h,m] = startVal.split(':').map(Number);
+    const total = h*60+m+mins;
+    const eh = Math.floor((total%1440)/60), em = total%60;
+    document.getElementById('fEndTime').value = pad(eh)+':'+pad(em);
+  };
+});
 
 const areaSelect = document.getElementById('fArea');
 areaSelect.innerHTML = state ? '' : '';
@@ -562,17 +1113,35 @@ function populateAreaSelect(){ areaSelect.innerHTML = state.areas.map(a=>`<optio
 function resetSheet(){
   document.getElementById('captureInput').value='';
   document.getElementById('fNotes').value='';
+  document.getElementById('fEndTime').value='';
   document.getElementById('fRepeat').value='none';
   captureRepeat='none'; captureDows.clear(); captureToday=false;
+  captureColor = COLOR_PALETTE[2]; refreshColorChips();
+  captureTrack = true; document.getElementById('chipTrack').classList.add('selected');
   document.getElementById('chipToday').classList.remove('selected');
   document.getElementById('dowField').style.display='none';
   document.getElementById('moreFields').classList.remove('open');
+  document.getElementById('colorField').style.display='none';
+  document.getElementById('emojiField').style.display='none';
+  emojiManuallySet = false;
+  document.getElementById('trackField').style.display='none';
+  document.getElementById('durationField').style.display='none';
+  document.getElementById('noTimeField').style.display='none';
+  captureNoTime = false;
+  document.getElementById('chipNoTime').classList.remove('selected');
+  durationGroup.querySelectorAll('.chip').forEach(c=>c.classList.remove('selected'));
   document.getElementById('captureDelete').style.display='none';
+  document.getElementById('deadlineField').style.display='none';
+  document.getElementById('fDeadline').value='';
+  document.getElementById('fDeadline').disabled = false;
+  document.getElementById('chipOngoing').classList.remove('selected');
+  document.getElementById('chipWhen').classList.remove('selected');
   dowGroup.querySelectorAll('.dow').forEach(d=>d.classList.remove('selected'));
 }
 
 function openCapture(opts){
   opts = opts || {};
+  document.getElementById('captureInput').placeholder = "What's on your mind?";
   editKind='item'; editId=null;
   resetSheet();
   populateAreaSelect();
@@ -595,6 +1164,16 @@ function openEditItem(id){
   areaSelect.value = item.areaId;
   captureToday = !!item.today;
   document.getElementById('chipToday').classList.toggle('selected', captureToday);
+  if(item.deadline){
+    document.getElementById('deadlineField').style.display='block';
+    document.getElementById('chipWhen').classList.add('selected');
+    if(item.deadline==='ongoing'){
+      document.getElementById('chipOngoing').classList.add('selected');
+      document.getElementById('fDeadline').disabled = true;
+    } else {
+      document.getElementById('fDeadline').value = item.deadline;
+    }
+  }
   document.getElementById('areaField').style.display='block';
   document.getElementById('timeField').style.display='none';
   document.getElementById('repeatField').style.display='none';
@@ -602,21 +1181,56 @@ function openEditItem(id){
   document.getElementById('captureBackdrop').classList.add('open');
 }
 
+function openNewBlock(prefillTime){
+  editKind='block'; editId=null;
+  resetSheet();
+  document.getElementById('captureInput').placeholder = 'New task or action…';
+  document.getElementById('areaField').style.display='none';
+  document.getElementById('timeField').style.display='flex';
+  document.getElementById('durationField').style.display='block';
+  document.getElementById('colorField').style.display='block';
+  document.getElementById('emojiField').style.display='block';
+  document.getElementById('trackField').style.display='block';
+  document.getElementById('repeatField').style.display='block';
+  document.getElementById('noTimeField').style.display='block';
+  document.getElementById('fTime').value = prefillTime || '09:00';
+  document.getElementById('fEmoji').value = '●';
+  emojiManuallySet = false;
+  document.getElementById('captureBackdrop').classList.add('open');
+  setTimeout(()=> document.getElementById('captureInput').focus(), 100);
+}
+
 function openEditBlock(id){
   const block = state.blocks.find(x=>x.id===id); if(!block) return;
   editKind='block'; editId=id;
   resetSheet();
+  document.getElementById('captureInput').placeholder = 'New task or action…';
   document.getElementById('captureInput').value = block.title;
   document.getElementById('fNotes').value = block.sub || '';
   document.getElementById('fTime').value = block.time;
   document.getElementById('fEndTime').value = block.endTime || '';
   document.getElementById('areaField').style.display='none';
-  document.getElementById('timeField').style.display='block';
+  document.getElementById('timeField').style.display='flex';
+  document.getElementById('durationField').style.display='block';
+  document.getElementById('colorField').style.display='block';
+  document.getElementById('emojiField').style.display='block';
+  document.getElementById('fEmoji').value = ICONS[block.icon] || block.icon || '●';
+  emojiManuallySet = true;
+  document.getElementById('trackField').style.display='block';
   document.getElementById('repeatField').style.display='block';
-  document.getElementById('fRepeat').value = block.days.length===7 ? 'daily' : 'weekly';
-  captureRepeat = block.days.length===7 ? 'daily' : 'weekly';
-  document.getElementById('dowField').style.display = captureRepeat==='weekly' ? 'block':'none';
-  block.days.forEach(d=>{ captureDows.add(d); const el=dowGroup.querySelector(`[data-d="${d}"]`); if(el) el.classList.add('selected'); });
+  const paletteMatch = COLOR_PALETTE.find(c=>c.color===block.color) || COLOR_PALETTE[0];
+  captureColor = paletteMatch; refreshColorChips();
+  captureTrack = !!block.checkable;
+  document.getElementById('chipTrack').classList.toggle('selected', captureTrack);
+  if(block.oneOffDate){
+    document.getElementById('fRepeat').value = 'none'; captureRepeat='none';
+  } else if(block.days.length===7){
+    document.getElementById('fRepeat').value = 'daily'; captureRepeat='daily';
+  } else {
+    document.getElementById('fRepeat').value = 'weekly'; captureRepeat='weekly';
+    document.getElementById('dowField').style.display='block';
+    block.days.forEach(d=>{ captureDows.add(d); const el=dowGroup.querySelector(`[data-d="${d}"]`); if(el) el.classList.add('selected'); });
+  }
   document.getElementById('captureDelete').style.display='block';
   document.getElementById('moreFields').classList.add('open');
   document.getElementById('captureBackdrop').classList.add('open');
@@ -624,12 +1238,13 @@ function openEditBlock(id){
 
 function openEditRoutineMeta(id){
   const r = state.routines.find(x=>x.id===id); if(!r) return;
+  const ov = r.overrides && r.overrides[dstr(viewDate)];
   editKind='routine'; editId=id;
   resetSheet();
-  document.getElementById('captureInput').value = r.title;
+  document.getElementById('captureInput').value = ov ? ov.title : r.title;
   document.getElementById('areaField').style.display='none';
   document.getElementById('timeField').style.display='block';
-  document.getElementById('fTime').value = r.time;
+  document.getElementById('fTime').value = ov ? ov.time : r.time;
   document.getElementById('repeatField').style.display='none';
   document.getElementById('dowField').style.display='block';
   document.getElementById('moreFields').classList.add('open');
@@ -638,17 +1253,33 @@ function openEditRoutineMeta(id){
   document.getElementById('captureBackdrop').classList.add('open');
 }
 
-document.getElementById('headerAddBtn').onclick = ()=> openCapture({});
+document.getElementById('headerAddBtn').onclick = ()=>{
+  if(currentView==='inbox') openCapture({});
+  else openNewBlock();
+};
+document.getElementById('addToTimelineBtn').onclick = ()=> openNewBlock();
+document.getElementById('addAreaBtn').onclick = async ()=>{
+  const name = await appPrompt('Name this area');
+  if(!name || !name.trim()) return;
+  const palette = ['var(--accent)','var(--slate)','var(--gold)','var(--sage)'];
+  const color = palette[state.areas.length % palette.length];
+  state.areas.push({id: uid(), name: name.trim(), color});
+  await save(); renderInbox(); showToast('Area added');
+};
 document.getElementById('captureCancel').onclick = ()=> document.getElementById('captureBackdrop').classList.remove('open');
 document.getElementById('captureBackdrop').onclick = (e)=>{ if(e.target.id==='captureBackdrop') e.currentTarget.classList.remove('open'); };
 
 document.getElementById('captureDelete').onclick = async ()=>{
-  if(editKind==='item'){ state.items = state.items.filter(x=>x.id!==editId); }
-  else if(editKind==='block'){ state.blocks = state.blocks.filter(x=>x.id!==editId); }
-  else if(editKind==='routine'){ state.routines = state.routines.filter(x=>x.id!==editId); }
-  await save();
-  document.getElementById('captureBackdrop').classList.remove('open');
-  renderAll(); showToast('Deleted');
+  if(editKind==='item'){
+    state.items = state.items.filter(x=>x.id!==editId);
+    await save(); document.getElementById('captureBackdrop').classList.remove('open'); renderAll(); showToast('Deleted');
+  } else if(editKind==='block'){
+    const removed = await removeBlockWithScope(editId, dstr(viewDate));
+    if(removed){ document.getElementById('captureBackdrop').classList.remove('open'); renderAll(); }
+  } else if(editKind==='routine'){
+    state.routines = state.routines.filter(x=>x.id!==editId);
+    await save(); document.getElementById('captureBackdrop').classList.remove('open'); renderAll(); showToast('Deleted');
+  }
 };
 
 document.getElementById('captureSave').onclick = async ()=>{
@@ -660,21 +1291,61 @@ document.getElementById('captureSave').onclick = async ()=>{
       const item = state.items.find(x=>x.id===editId);
       item.title = title; item.notes = document.getElementById('fNotes').value.trim();
       item.areaId = areaSelect.value; item.today = captureToday;
+      item.deadline = document.getElementById('chipOngoing').classList.contains('selected') ? 'ongoing' : (document.getElementById('fDeadline').value || null);
     } else {
-      state.items.push({id:uid(), title, areaId: areaSelect.value, today: captureToday, completed:false, notes: document.getElementById('fNotes').value.trim()});
+      state.items.push({id:uid(), title, areaId: areaSelect.value, today: captureToday, completed:false, notes: document.getElementById('fNotes').value.trim(), deadline: document.getElementById('chipOngoing').classList.contains('selected') ? 'ongoing' : (document.getElementById('fDeadline').value || null)});
     }
+  } else if(editKind==='block' && captureNoTime){
+    if(editId){
+      const idx = state.blocks.findIndex(x=>x.id===editId);
+      if(idx>-1) state.blocks.splice(idx,1);
+    }
+    state.items.push({
+      id: uid(), title, areaId: null, today:false, completed:false,
+      notes: document.getElementById('fNotes').value.trim(),
+      deadline: null, dateTag: dstr(viewDate),
+    });
   } else if(editKind==='block'){
-    const block = state.blocks.find(x=>x.id===editId);
-    block.title = title; block.sub = document.getElementById('fNotes').value.trim();
-    block.time = document.getElementById('fTime').value || block.time;
-    block.endTime = document.getElementById('fEndTime').value || null;
-    block.days = captureRepeat==='daily' ? [0,1,2,3,4,5,6] : Array.from(captureDows).sort();
-    if(block.days.length===0) block.days=[0,1,2,3,4,5,6];
+    const days = captureRepeat==='daily' ? [0,1,2,3,4,5,6] : (captureRepeat==='weekly' ? Array.from(captureDows).sort() : []);
+    const oneOffDate = captureRepeat==='none' ? dstr(viewDate) : null;
+    if(editId){
+      const block = state.blocks.find(x=>x.id===editId);
+      block.title = title; block.sub = document.getElementById('fNotes').value.trim();
+      block.time = document.getElementById('fTime').value || block.time;
+      block.endTime = document.getElementById('fEndTime').value || null;
+      block.color = captureColor.color; block.dim = captureColor.dim;
+      block.icon = document.getElementById('fEmoji').value.trim() || block.icon;
+      block.checkable = captureTrack;
+      block.oneOffDate = oneOffDate;
+      block.days = days.length ? days : (oneOffDate ? [] : [0,1,2,3,4,5,6]);
+    } else {
+      state.blocks.push({
+        id: uid(), title, sub: document.getElementById('fNotes').value.trim(),
+        time: document.getElementById('fTime').value || '09:00',
+        endTime: document.getElementById('fEndTime').value || null,
+        icon: document.getElementById('fEmoji').value.trim() || '●', color: captureColor.color, dim: captureColor.dim,
+        checkable: captureTrack,
+        oneOffDate, days: days.length ? days : (oneOffDate ? [] : [0,1,2,3,4,5,6]),
+      });
+    }
   } else if(editKind==='routine'){
     const r = state.routines.find(x=>x.id===editId);
-    r.title = title; r.time = document.getElementById('fTime').value || r.time;
-    r.days = Array.from(captureDows).sort();
-    if(r.days.length===0) r.days=[0,1,2,3,4,5,6];
+    const newTitle = title;
+    const newTime = document.getElementById('fTime').value || r.time;
+    const newDays = Array.from(captureDows).sort();
+    const finalDays = newDays.length ? newDays : [0,1,2,3,4,5,6];
+    const changed = (newTitle !== r.title) || (newTime !== r.time);
+    let scope = 'all';
+    if(changed && r.days.length > 1){
+      scope = (await appConfirm("Apply this change to every day this routine repeats on?\n\nOK = all days\nCancel = just today")) ? 'all' : 'today';
+    }
+    if(scope==='today'){
+      if(!r.overrides) r.overrides = {};
+      r.overrides[dstr(viewDate)] = { title: newTitle, time: newTime };
+    } else {
+      r.title = newTitle; r.time = newTime;
+    }
+    r.days = finalDays;
   }
   await save();
   document.getElementById('captureBackdrop').classList.remove('open');
