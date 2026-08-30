@@ -91,7 +91,7 @@ button{font-family:inherit;}
 .routine-edit-link{font-size:11px;color:var(--accent);text-decoration:underline;cursor:pointer;padding:4px 0 2px;}
 
 .drawer{position:fixed;left:0;right:0;bottom:0;background:var(--paper);border-radius:20px 20px 0 0;border-top:1px solid var(--line);z-index:30;box-shadow:0 -8px 24px rgba(51,43,34,0.12);transition:max-height 0.25s ease;overflow:hidden;}
-.drawer-head{display:flex;align-items:center;justify-content:space-between;padding:14px 18px 10px;cursor:pointer;position:relative;}
+.drawer-head{display:flex;align-items:center;justify-content:space-between;padding:16px 18px 14px;cursor:pointer;position:relative;min-height:24px;}
 .drawer-head .handle{position:absolute;left:50%;top:6px;transform:translateX(-50%);width:34px;height:4px;background:var(--line);border-radius:3px;}
 .drawer-title{font-size:12px;font-weight:700;letter-spacing:0.4px;color:var(--ink-muted);text-transform:uppercase;}
 .drawer-body{padding:0 14px 18px;}
@@ -816,6 +816,9 @@ function renderDrawer(){
   const label = isActualToday ? 'TO DO TODAY' : `TO DO — ${viewDate.toLocaleDateString('en-GB',{weekday:'short', day:'numeric', month:'short'}).toUpperCase()}`;
   document.getElementById('drawerTitle').textContent = `${todayItems.length} THING${todayItems.length===1?'':'S'} ${label}`;
   let html='';
+  if(todayItems.length===0){
+    html += `<div style="text-align:center;padding:14px 10px;color:var(--ink-muted);font-size:13px;">No actions yet for ${isActualToday?'today':'this day'} — add one below.</div>`;
+  }
   todayItems.forEach(i=>{
     const area = i.areaId ? state.areas.find(a=>a.id===i.areaId) : null;
     html += `<div class="dtask"><div class="dcheck" data-itemdone="${i.id}"></div><span data-itemedit="${i.id}">${esc(i.title)}</span><div class="dot" style="background:${area?area.color:'var(--ink-faint)'}"></div></div>`;
