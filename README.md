@@ -5,7 +5,7 @@ You need a free GitHub account. That's the only account required — no paid tie
 ## Steps
 
 1. Go to github.com, sign in (or create a free account).
-2. Click **New repository**. Name it `daybook` (or anything). Keep it Public. Don't add a README.
+2. Click **New repository**. Name it `iPlan` (or anything). Keep it Public. Don't add a README.
 3. On the new repo page, click **uploading an existing file** (or use "Add file → Upload files").
 4. Drag in all 5 files from this folder: `index.html`, `manifest.json`, `service-worker.js`, `icon-192.png`, `icon-512.png`.
 5. Commit the upload.
