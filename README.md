@@ -1,4 +1,4 @@
-# Deploying Daybook — free, ~5 minutes
+# Deploying iPlan — free, ~5 minutes
 
 You need a free GitHub account. That's the only account required — no paid tier, no credit card.
 
