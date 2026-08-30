@@ -181,7 +181,7 @@ button{font-family:inherit;}
       <div class="app-name">iPlan</div>
       <div><span class="date-main" id="hMain">Mon, 24</span><span class="date-sub" id="hSub">August 2026</span></div>
     </div>
-    <div style="display:flex;gap:6px;"><button class="icon-btn" id="headerAddBtn" style="font-size:20px;padding:8px 14px;">＋</button><button class="icon-btn" id="settingsBtn">⚙</button></div>
+    <div style="display:flex;gap:6px;"><button class="icon-btn" id="actionsShortcutBtn" style="font-size:13px;padding:8px 12px;">☰ <span id="actionsCount">0</span></button><button class="icon-btn" id="headerAddBtn" style="font-size:20px;padding:8px 14px;">＋</button><button class="icon-btn" id="settingsBtn">⚙</button></div>
   </div>
 </div>
 
@@ -815,6 +815,8 @@ function renderDrawer(){
   const todayItems = state.items.filter(i=> !i.completed && ((i.today && isActualToday) || i.dateTag===ds));
   const label = isActualToday ? 'TO DO TODAY' : `TO DO — ${viewDate.toLocaleDateString('en-GB',{weekday:'short', day:'numeric', month:'short'}).toUpperCase()}`;
   document.getElementById('drawerTitle').textContent = `${todayItems.length} THING${todayItems.length===1?'':'S'} ${label}`;
+  const countBadge = document.getElementById('actionsCount');
+  if(countBadge) countBadge.textContent = todayItems.length;
   let html='';
   if(todayItems.length===0){
     html += `<div style="text-align:center;padding:14px 10px;color:var(--ink-muted);font-size:13px;">No actions yet for ${isActualToday?'today':'this day'} — add one below.</div>`;
@@ -839,6 +841,17 @@ document.getElementById('drawerHead').onclick = ()=>{
   document.getElementById('drawer').style.maxHeight = drawerOpen?'60vh':'52px';
   document.getElementById('drawerChevron').textContent = drawerOpen?'▾':'▲';
   document.getElementById('drawerBody').style.overflowY = drawerOpen?'auto':'hidden';
+};
+document.getElementById('actionsShortcutBtn').onclick = ()=>{
+  if(currentView !== 'today'){
+    document.querySelector('.nav-item[data-view="today"]').click();
+  }
+  drawerOpen = true;
+  document.getElementById('drawer').style.maxHeight = '60vh';
+  document.getElementById('drawerChevron').textContent = '▾';
+  document.getElementById('drawerBody').style.overflowY = 'auto';
+  const drawerEl = document.getElementById('drawer');
+  if(drawerEl.scrollIntoView) drawerEl.scrollIntoView({behavior:'smooth', block:'end'});
 };
 
 function renderWeek(){
