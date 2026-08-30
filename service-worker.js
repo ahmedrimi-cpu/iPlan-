@@ -1,4 +1,4 @@
-const CACHE = 'myplan-v1';
+const CACHE = 'iplan-v1';
 const ASSETS = ['./', './index.html', './manifest.json', './icon-192.png', './icon-512.png'];
 
 self.addEventListener('install', (e) => {

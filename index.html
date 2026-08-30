@@ -3,12 +3,12 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>Planner</title>
+<title>iPlan</title>
 <link rel="manifest" href="./manifest.json">
 <meta name="theme-color" content="#F3ECDA">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
-<meta name="apple-mobile-web-app-title" content="Planner">
+<meta name="apple-mobile-web-app-title" content="iPlan">
 <link rel="apple-touch-icon" href="./icon-192.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -178,7 +178,7 @@ button{font-family:inherit;}
 <div class="header">
   <div class="header-row">
     <div>
-      <div class="app-name">Planner</div>
+      <div class="app-name">iPlan</div>
       <div><span class="date-main" id="hMain">Mon, 24</span><span class="date-sub" id="hSub">August 2026</span></div>
     </div>
     <div style="display:flex;gap:6px;"><button class="icon-btn" id="headerAddBtn" style="font-size:20px;padding:8px 14px;">＋</button><button class="icon-btn" id="settingsBtn">⚙</button></div>
@@ -224,7 +224,7 @@ button{font-family:inherit;}
     </div>
     <div class="settings-card">
       <h3>About</h3>
-      <div class="settings-note">Planner — your inbox, timeline and routines in one place. Data is stored only on this device, in this browser.</div>
+      <div class="settings-note">iPlan — your inbox, timeline and routines in one place. Data is stored only on this device, in this browser.</div>
     </div>
     <div class="settings-card">
       <h3>Backup</h3>
@@ -235,14 +235,21 @@ button{font-family:inherit;}
       </div>
       <input type="file" id="importFile" accept="application/json" style="display:none;">
     </div>
+    <div class="settings-card">
+      <h3>Weekly skeleton</h3>
+      <div class="settings-note">Adds the recurring weekly anchors (Gym, Work, Monday/Wednesday/Thursday classes, Friday structure, Sat/Sun rhythm) to your calendar. Skips anything already there by title, so it won't duplicate — safe to run again after editing this template.</div>
+      <div class="sheet-actions">
+        <button class="btn btn-primary" id="loadSkeletonBtn" style="width:100%;">Load weekly skeleton into my calendar</button>
+      </div>
+    </div>
   </div>
 </div>
 
-<div class="drawer" id="drawer" style="max-height:52px;">
+<div class="drawer" id="drawer" style="max-height:60vh;">
   <div class="drawer-head" id="drawerHead">
     <div class="handle"></div>
     <div class="drawer-title" id="drawerTitle">3 THINGS TO DO TODAY</div>
-    <div style="color:var(--ink-muted);font-size:13px;" id="drawerChevron">▲</div>
+    <div style="color:var(--ink-muted);font-size:13px;" id="drawerChevron">▾</div>
   </div>
   <div class="drawer-body" id="drawerBody"></div>
 </div>
@@ -271,19 +278,34 @@ button{font-family:inherit;}
       <select id="fArea"></select>
     </div>
     <div class="field" id="noTimeField" style="display:none;">
-      <div class="chip-row"><div class="chip" id="chipNoTime">No specific time — just add to this day's list</div></div>
+      <div class="chip-row"><div class="chip" id="chipNoTime">Just an action (no time)</div></div>
     </div>
     <div class="row2" id="timeField" style="display:none;">
       <div class="field"><label>Starts</label><input type="time" id="fTime"></div>
       <div class="field"><label>Ends (optional)</label><input type="time" id="fEndTime"></div>
     </div>
+    <div class="field" id="anchorToggleField" style="display:none;">
+      <div class="chip-row"><div class="chip" id="chipAnchor">Anchor to a prayer time instead of a fixed clock time</div></div>
+    </div>
+    <div class="row2" id="anchorFields" style="display:none;">
+      <div class="field"><label>Prayer</label>
+        <select id="fAnchor">
+          <option value="fajr">Fajr</option>
+          <option value="dhuhr">Dhuhr</option>
+          <option value="asr">Asr</option>
+          <option value="maghrib">Maghrib</option>
+          <option value="isha">Isha</option>
+        </select>
+      </div>
+      <div class="field"><label>Offset (minutes)</label><input type="number" id="fAnchorOffset" value="30" style="width:100%;"></div>
+    </div>
     <div class="field" id="durationField" style="display:none;"><label>Or pick a duration</label>
       <div class="chip-row" id="durationGroup">
-        <div class="chip" data-mins="15">15m</div>
         <div class="chip" data-mins="30">30m</div>
-        <div class="chip" data-mins="45">45m</div>
         <div class="chip" data-mins="60">1h</div>
         <div class="chip" data-mins="90">1.5h</div>
+        <div class="chip" data-mins="120">2h</div>
+        <div class="chip" data-mins="180">3h</div>
       </div>
     </div>
     <div class="field"><label>Notes</label><input type="text" id="fNotes" placeholder="Optional context, e.g. ~30 min, location, link"></div>
@@ -392,6 +414,14 @@ let captureToday = false;
 
 function pad(n){return n.toString().padStart(2,'0');}
 function fmt12(t){ if(!t) return ''; const [h,m]=t.split(':').map(Number); const hr=((h+11)%12)+1; const ap=h<12?'am':'pm'; return hr+':'+pad(m)+' '+ap; }
+function resolveAnchorTime(anchor, offsetMin){
+  const base = state.prayerTimes[anchor];
+  if(!base) return '00:00';
+  const [h,m] = base.split(':').map(Number);
+  let total = h*60 + m + (offsetMin||0);
+  total = ((total % 1440) + 1440) % 1440;
+  return pad(Math.floor(total/60)) + ':' + pad(total%60);
+}
 function fmtDate(ds){ if(!ds) return ''; if(ds==='ongoing') return 'Ongoing'; const d=new Date(ds+'T12:00:00'); return d.toLocaleDateString('en-GB',{day:'numeric',month:'short'}); }
 function dstr(d){return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate());}
 function uid(){return 'x'+Date.now()+Math.random().toString(36).slice(2,6);}
@@ -406,15 +436,23 @@ function defaults(){
       {id:uid(), title:'Look into certifications', areaId:'certs', today:true, completed:false},
     ],
     blocks: [
-      {id:uid(), title:'Gym', sub:'~30 min', time:'07:30', icon:'runner', color:'var(--accent)', dim:'var(--accent-dim)', checkable:true, oneOffDate: dstr(new Date()), days:[]},
+      {id:uid(), title:'Gym', sub:'Right after morning routine', time:'06:00', endTime:'06:45', icon:'runner', color:'var(--accent)', dim:'var(--accent-dim)', checkable:true, days:[0,1,2,3,4,5,6]},
       {id:uid(), title:'Work', sub:'', time:'09:00', endTime:'17:00', icon:'work', color:'var(--slate)', dim:'var(--slate-dim)', checkable:false, days:[1,2,3,4,5]},
-      {id:uid(), title:'Quran Class', sub:'', time:'18:45', endTime:'19:45', icon:'book', color:'var(--gold)', dim:'var(--gold-dim)', checkable:false, days:[1,3,4]},
-      {id:uid(), title:'Class · Sheikh M. Ali', sub:'', time:'20:15', endTime:'21:30', icon:'star', color:'var(--gold)', dim:'var(--gold-dim)', checkable:false, days:[6,0]},
-      {id:uid(), title:'Home / Wife / Dinner', sub:'~1 hr', time:'22:30', icon:'heart', color:'var(--accent)', dim:'var(--accent-dim)', checkable:false, days:[0,1,2,3,4,5,6]},
+      {id:uid(), title:'Class · Sheikh M. Ali', sub:'Weekly, until further notice', time:'20:15', endTime:'21:30', icon:'star', color:'var(--gold)', dim:'var(--gold-dim)', checkable:false, days:[1]},
+      {id:uid(), title:'Islam in Context to Modernity — Ustad Malik', sub:'Starts 8:15 — put 8:00 to make it', time:'20:00', endTime:'21:15', icon:'book', color:'var(--gold)', dim:'var(--gold-dim)', checkable:false, days:[3]},
+      {id:uid(), title:'Quran class w/ brother-in-law', sub:'', time:'19:30', endTime:'20:15', icon:'book', color:'var(--gold)', dim:'var(--gold-dim)', checkable:false, days:[4]},
+      {id:uid(), title:'Family check-in — Hoya + own family', sub:'Wife\'s family, then parents/grandparents', time:'15:30', endTime:'16:30', icon:'heart', color:'var(--accent)', dim:'var(--accent-dim)', checkable:true, days:[5]},
+      {id:uid(), title:'Quran w/ sister', sub:'', time:'17:30', endTime:'18:00', icon:'book', color:'var(--gold)', dim:'var(--gold-dim)', checkable:false, days:[5]},
+      {id:uid(), title:'Quality time with wife', sub:'Friday anchor', time:'20:00', endTime:null, icon:'heart', color:'var(--accent)', dim:'var(--accent-dim)', checkable:false, days:[5]},
+      {id:uid(), title:'Quran Halaqah', sub:'Optional', time:'07:00', endTime:'08:00', icon:'book', color:'var(--sage)', dim:'var(--sage-dim)', checkable:true, days:[6]},
+      {id:uid(), title:'Breakfast with wife', sub:'', time:'08:30', endTime:'09:15', icon:'heart', color:'var(--accent)', dim:'var(--accent-dim)', checkable:false, days:[6]},
+      {id:uid(), title:'Rest / recovery', sub:'No football this season', time:'10:00', endTime:null, icon:'moon', color:'var(--slate)', dim:'var(--slate-dim)', checkable:false, days:[6]},
+      {id:uid(), title:'Reset day — audit week & checklist', sub:'', time:'10:00', endTime:'11:00', icon:'dot', color:'var(--slate)', dim:'var(--slate-dim)', checkable:true, days:[0]},
     ],
     routines: [
-      {id:uid(), title:'Morning Routine', time:'05:20', icon:'sun', color:'var(--gold)', dim:'var(--gold-dim)', subtasks: MORNING_SUBTASKS, days:[0,1,2,3,4,5,6]},
+      {id:uid(), title:'Morning Routine', time:'05:20', anchor:'fajr', anchorOffset:30, icon:'sun', color:'var(--gold)', dim:'var(--gold-dim)', subtasks: MORNING_SUBTASKS, days:[0,1,2,3,4,5,6]},
       {id:uid(), title:'Night Routine', time:'23:45', icon:'moon', color:'var(--slate)', dim:'var(--slate-dim)', subtasks: NIGHT_SUBTASKS, days:[0,1,2,3,4,5,6]},
+      {id:uid(), title:'Friday Morning Additions', time:'05:30', icon:'sun', color:'var(--gold)', dim:'var(--gold-dim)', subtasks: ['Surah Al-Kahf', 'Extra salawat on the Prophet ﷺ'], days:[5]},
     ],
     completions:{}, todayFlags:{},
     prayerTimes: { fajr:'04:45', dhuhr:'13:17', asr:'16:49', maghrib:'19:58', isha:'21:22' },
@@ -511,6 +549,7 @@ async function removeBlockWithScope(blockId, forDate){
   if(!block) return false;
   const isRecurring = !block.oneOffDate && block.days && block.days.length > 0;
   if(!isRecurring){
+    if(!(await appConfirm(`Delete "${block.title}"?`))) return false;
     state.blocks = state.blocks.filter(x=>x.id!==blockId);
     await save();
     showToast('Removed from calendar');
@@ -518,7 +557,6 @@ async function removeBlockWithScope(blockId, forDate){
   }
   const action = await appChoice(`"${block.title}" repeats. What would you like to do?`, [
     {key:'skip', label:'Remove just this day'},
-    {key:'future', label:'Remove this and all future days'},
     {key:'all', label:'Remove entirely (every day)'},
   ]);
   if(!action) return false;
@@ -527,11 +565,6 @@ async function removeBlockWithScope(blockId, forDate){
     block.exceptionDates.push(forDate);
     await save();
     showToast('Removed for this day only');
-  } else if(action==='future'){
-    const dayBefore = new Date(forDate+'T12:00:00'); dayBefore.setDate(dayBefore.getDate()-1);
-    block.endDate = dstr(dayBefore);
-    await save();
-    showToast('Ended — future days cleared');
   } else {
     state.blocks = state.blocks.filter(x=>x.id!==blockId);
     await save();
@@ -668,9 +701,10 @@ function renderTimeline(){
   const ds = dstr(viewDate);
   const {blocks, routines} = itemsForDate(viewDate);
   const P = state.prayerTimes;
+  const isFriday = viewDate.getDay() === 5;
   const prayers = [
     {name:'Fajr', time:P.fajr, sub:'Prayer time'},
-    {name:'Dhuhr', time:P.dhuhr, sub:'Prayer time'},
+    isFriday ? {name:'Jumu\'ah', time:P.dhuhr, sub:'Replaces Dhuhr this week'} : {name:'Dhuhr', time:P.dhuhr, sub:'Prayer time'},
     {name:'Asr', time:P.asr, sub:'Prayer time'},
     {name:'Maghrib', time:P.maghrib, sub:'Prayer time'},
     {name:'Isha', time:P.isha, sub:'Prayer time'},
@@ -680,7 +714,8 @@ function renderTimeline(){
   blocks.forEach(b=> entries.push({type:'block', time:b.time, data:b}));
   routines.forEach(r=>{
     const ov = r.overrides && r.overrides[ds];
-    const effective = ov ? {...r, title: ov.title, time: ov.time} : r;
+    const baseTime = r.anchor ? resolveAnchorTime(r.anchor, r.anchorOffset) : r.time;
+    const effective = ov ? {...r, title: ov.title, time: ov.time} : {...r, time: baseTime};
     entries.push({type:'routine', time: effective.time, data: effective, baseId: r.id});
   });
   entries.sort((a,b)=> a.time.localeCompare(b.time));
@@ -715,15 +750,16 @@ function renderTimeline(){
         : '';
       html += `<div class="trow"><div class="ttime">${b.time}</div>
         <div class="trail"><div class="ticon" style="background:${b.dim};color:${b.color};">${ICONS[b.icon] || b.icon || '•'}</div></div>
-        <div class="tcard" data-blockedit="${b.id}" data-swipeblock="${b.id}"><div><div class="ttitle">${esc(b.title)}</div><div class="tsub">${esc(b._displaySub||'')}</div></div>
+        <div class="tcard" data-blockedit="${b.id}"><div><div class="ttitle">${esc(b.title)}</div><div class="tsub">${esc(b._displaySub||'')}</div></div>
         <div class="tstatus" style="display:flex;align-items:center;gap:6px;" data-stopprop="1">${statusHtml}<button class="chev" data-blocksteps="${b.id}" style="background:none;border:none;">${stepsBadge} ${blockExpanded?'▾':'☰'}</button></div></div></div>`;
       if(blockExpanded) html += renderSubtaskSection('block', b, ds);
     } else if(e.type==='routine'){
       const r=e.data; const doneCount = r.subtasks.filter((s,i)=> state.completions[ds+'::routine::'+r.id+'::'+i]).length;
       const expanded = state._expanded === r.id;
+      const anchorNote = r.anchor ? `${r.anchor.charAt(0).toUpperCase()+r.anchor.slice(1)} ${r.anchorOffset>=0?'+':''}${r.anchorOffset}m · ` : '';
       html += `<div class="trow"><div class="ttime">${r.time}</div>
         <div class="trail"><div class="ticon" style="background:${r.dim};color:${r.color};">${ICONS[r.icon] || r.icon || '•'}</div></div>
-        <div class="tcard" data-routinetoggle="${r.id}"><div><div class="ttitle">${esc(r.title)}</div><div class="tsub">${doneCount} / ${r.subtasks.length} complete</div></div>
+        <div class="tcard" data-routinetoggle="${r.id}"><div><div class="ttitle">${esc(r.title)}</div><div class="tsub">${anchorNote}${doneCount} / ${r.subtasks.length} complete</div></div>
         <div class="tstatus" style="display:flex;align-items:center;"><span class="progress-badge" style="color:${r.color}">${doneCount}/${r.subtasks.length}</span><span class="chev">${expanded?'▾':'▸'}</span></div></div></div>`;
       if(expanded) html += renderSubtaskSection('routine', r, ds);
     }
@@ -767,34 +803,13 @@ function renderTimeline(){
   document.querySelectorAll('[data-blockedit]').forEach(el=>{
     el.onclick = (ev)=>{ if(ev.target.closest('[data-stopprop]')) return; openEditBlock(el.dataset.blockedit); };
   });
-  document.querySelectorAll('[data-swipeblock]').forEach(card=>{
-    let sx=null, moved=false;
-    card.addEventListener('touchstart', e=>{ sx=e.touches[0].clientX; moved=false; card.style.transition='none'; }, {passive:true});
-    card.addEventListener('touchmove', e=>{
-      if(sx===null) return;
-      const dx = e.touches[0].clientX - sx;
-      if(Math.abs(dx) > 8) moved = true;
-      if(dx < 0) card.style.transform = `translateX(${Math.max(dx,-90)}px)`;
-    }, {passive:true});
-    card.addEventListener('touchend', async e=>{
-      if(sx===null) return;
-      const dx = e.changedTouches[0].clientX - sx;
-      card.style.transition='transform 0.2s ease';
-      if(dx < -60){
-        const id = card.dataset.swipeblock;
-        card.style.transform = 'translateX(-40%)';
-        const removed = await removeBlockWithScope(id, dstr(viewDate));
-        if(removed) renderTimeline(); else card.style.transform = 'translateX(0)';
-      } else {
-        card.style.transform = 'translateX(0)';
-      }
-      sx=null;
-    }, {passive:true});
-  });
+  // Swipe-to-delete removed from Timeline cards — it conflicted with left/right swipe for day navigation.
+  // Deletion happens via tap-to-edit → Delete, which now confirms even for one-off items.
 }
 function nowRowHtml(nowStr){ return `<div class="now-row"><div class="now-time">${nowStr}</div><div class="now-line"></div><div class="now-label">NOW</div></div>`; }
 
 function renderDrawer(){
+  document.getElementById('drawerBody').style.overflowY = drawerOpen ? 'auto' : 'hidden';
   const ds = dstr(viewDate);
   const isActualToday = ds === dstr(new Date());
   const todayItems = state.items.filter(i=> !i.completed && ((i.today && isActualToday) || i.dateTag===ds));
@@ -815,7 +830,7 @@ function renderDrawer(){
   });
   document.getElementById('drawerAddTask').onclick = ()=> openCapture({defaultToday:true});
 }
-let drawerOpen=false;
+let drawerOpen=true;
 document.getElementById('drawerHead').onclick = ()=>{
   drawerOpen=!drawerOpen;
   document.getElementById('drawer').style.maxHeight = drawerOpen?'60vh':'52px';
@@ -862,7 +877,7 @@ function renderInbox(){
     html += `<div class="area-card" data-swipearea="${a.id}"><div class="area-head" data-areatoggle="${a.id}">
         <div class="area-name"><span class="dot" style="background:${a.color}"></span>${a.name}</div><div class="area-count">${items.length}</div></div>
       <div class="area-items ${openState?'open':''}">
-        ${items.map(i=>`<div class="area-item" data-swipeid="${i.id}"><span data-itemedit="${i.id}">${esc(i.title)}${i.deadline?` <span class="wd-chip" style="margin-left:4px;">Due ${fmtDate(i.deadline)}</span>`:''}</span><button class="promote" data-promote="${i.id}">Schedule</button><button class="idel" data-idel="${i.id}">×</button></div>`).join('')}
+        ${items.map(i=>`<div class="area-item" data-swipeid="${i.id}"><span data-itemedit="${i.id}">${esc(i.title)}${i.deadline?` <span class="wd-chip" style="margin-left:4px;">Due ${fmtDate(i.deadline)}</span>`:''}</span><button class="promote" data-promote="${i.id}">→ Timeline</button><button class="idel" data-idel="${i.id}">×</button></div>`).join('')}
         <div class="area-add"><input type="text" placeholder="New item…" data-areainput="${a.id}"><button data-areaaddbtn="${a.id}">Add</button></div>
       </div></div>`;
   });
@@ -873,7 +888,12 @@ function renderInbox(){
       state.items.push({id:uid(), title, areaId:el.dataset.areaaddbtn, today:false, completed:false}); await save(); renderInbox(); showToast('Added to inbox'); };
   });
   document.querySelectorAll('[data-promote]').forEach(el=>{
-    el.onclick = ()=>{ const item=state.items.find(x=>x.id===el.dataset.promote); item.today=true; save(); renderInbox(); showToast('Marked as Today'); };
+    el.onclick = ()=>{
+      const item=state.items.find(x=>x.id===el.dataset.promote);
+      promotingItemId = item.id;
+      openNewBlock();
+      document.getElementById('captureInput').value = item.title;
+    };
   });
   document.querySelectorAll('[data-idel]').forEach(el=>{
     el.onclick = async ()=>{ state.items = state.items.filter(x=>x.id!==el.dataset.idel); await save(); renderInbox(); renderDrawer(); showToast('Deleted'); };
@@ -981,6 +1001,21 @@ document.getElementById('importFile').onchange = (e)=>{
   reader.readAsText(file);
 };
 
+document.getElementById('loadSkeletonBtn').onclick = async ()=>{
+  const skeleton = defaults();
+  const existingBlockTitles = new Set(state.blocks.map(b=>b.title.toLowerCase()));
+  const existingRoutineTitles = new Set(state.routines.map(r=>r.title.toLowerCase()));
+  let addedBlocks = 0, addedRoutines = 0;
+  skeleton.blocks.forEach(b=>{
+    if(!existingBlockTitles.has(b.title.toLowerCase())){ state.blocks.push(b); addedBlocks++; }
+  });
+  skeleton.routines.forEach(r=>{
+    if(!existingRoutineTitles.has(r.title.toLowerCase())){ state.routines.push(r); addedRoutines++; }
+  });
+  await save(); renderAll();
+  showToast(addedBlocks+addedRoutines>0 ? `Added ${addedBlocks} block(s), ${addedRoutines} routine(s)` : 'Already up to date — nothing new to add');
+};
+
 function renderAll(){ renderHeader(); renderStrip(); renderTimeline(); renderDrawer(); renderWeek(); renderInbox(); renderSettings(); }
 document.getElementById('prevWeekBtn').onclick = ()=>{ viewDate.setDate(viewDate.getDate()-7); renderAll(); };
 document.getElementById('nextWeekBtn').onclick = ()=>{ viewDate.setDate(viewDate.getDate()+7); renderAll(); };
@@ -1086,10 +1121,16 @@ document.getElementById('captureInput').addEventListener('input', (e)=>{
 });
 document.getElementById('fEmoji').addEventListener('input', ()=>{ emojiManuallySet = true; });
 let captureNoTime = false;
+let promotingItemId = null;
 document.getElementById('chipNoTime').onclick = function(){
   captureNoTime = this.classList.toggle('selected');
   document.getElementById('timeField').style.display = captureNoTime ? 'none' : 'flex';
   document.getElementById('durationField').style.display = captureNoTime ? 'none' : 'block';
+};
+document.getElementById('chipAnchor').onclick = function(){
+  const on = this.classList.toggle('selected');
+  document.getElementById('timeField').style.display = on ? 'none' : 'flex';
+  document.getElementById('anchorFields').style.display = on ? 'flex' : 'none';
 };
 
 const durationGroup = document.getElementById('durationGroup');
@@ -1127,6 +1168,10 @@ function resetSheet(){
   document.getElementById('trackField').style.display='none';
   document.getElementById('durationField').style.display='none';
   document.getElementById('noTimeField').style.display='none';
+  document.getElementById('anchorToggleField').style.display='none';
+  document.getElementById('anchorFields').style.display='none';
+  document.getElementById('chipAnchor').classList.remove('selected');
+  document.getElementById('fAnchorOffset').value = '30';
   captureNoTime = false;
   document.getElementById('chipNoTime').classList.remove('selected');
   durationGroup.querySelectorAll('.chip').forEach(c=>c.classList.remove('selected'));
@@ -1244,7 +1289,15 @@ function openEditRoutineMeta(id){
   document.getElementById('captureInput').value = ov ? ov.title : r.title;
   document.getElementById('areaField').style.display='none';
   document.getElementById('timeField').style.display='block';
-  document.getElementById('fTime').value = ov ? ov.time : r.time;
+  document.getElementById('anchorToggleField').style.display='block';
+  document.getElementById('fTime').value = ov ? ov.time : (r.anchor ? resolveAnchorTime(r.anchor, r.anchorOffset) : r.time);
+  if(r.anchor && !ov){
+    document.getElementById('chipAnchor').classList.add('selected');
+    document.getElementById('timeField').style.display='none';
+    document.getElementById('anchorFields').style.display='flex';
+    document.getElementById('fAnchor').value = r.anchor;
+    document.getElementById('fAnchorOffset').value = r.anchorOffset||0;
+  }
   document.getElementById('repeatField').style.display='none';
   document.getElementById('dowField').style.display='block';
   document.getElementById('moreFields').classList.add('open');
@@ -1266,7 +1319,7 @@ document.getElementById('addAreaBtn').onclick = async ()=>{
   state.areas.push({id: uid(), name: name.trim(), color});
   await save(); renderInbox(); showToast('Area added');
 };
-document.getElementById('captureCancel').onclick = ()=> document.getElementById('captureBackdrop').classList.remove('open');
+document.getElementById('captureCancel').onclick = ()=>{ document.getElementById('captureBackdrop').classList.remove('open'); promotingItemId = null; };
 document.getElementById('captureBackdrop').onclick = (e)=>{ if(e.target.id==='captureBackdrop') e.currentTarget.classList.remove('open'); };
 
 document.getElementById('captureDelete').onclick = async ()=>{
@@ -1331,26 +1384,49 @@ document.getElementById('captureSave').onclick = async ()=>{
   } else if(editKind==='routine'){
     const r = state.routines.find(x=>x.id===editId);
     const newTitle = title;
-    const newTime = document.getElementById('fTime').value || r.time;
+    const useAnchor = document.getElementById('chipAnchor').classList.contains('selected');
     const newDays = Array.from(captureDows).sort();
     const finalDays = newDays.length ? newDays : [0,1,2,3,4,5,6];
-    const changed = (newTitle !== r.title) || (newTime !== r.time);
-    let scope = 'all';
-    if(changed && r.days.length > 1){
-      scope = (await appConfirm("Apply this change to every day this routine repeats on?\n\nOK = all days\nCancel = just today")) ? 'all' : 'today';
-    }
-    if(scope==='today'){
-      if(!r.overrides) r.overrides = {};
-      r.overrides[dstr(viewDate)] = { title: newTitle, time: newTime };
+
+    if(useAnchor){
+      r.anchor = document.getElementById('fAnchor').value;
+      r.anchorOffset = parseInt(document.getElementById('fAnchorOffset').value) || 0;
+      r.title = newTitle;
+      r.days = finalDays;
     } else {
-      r.title = newTitle; r.time = newTime;
+      const newTime = document.getElementById('fTime').value || r.time;
+      const changed = (newTitle !== r.title) || (newTime !== r.time) || !!r.anchor;
+      let scope = 'all';
+      if(changed && r.days.length > 1 && !r.anchor){
+        scope = (await appConfirm("Apply this change to every day this routine repeats on?\n\nOK = all days\nCancel = just today")) ? 'all' : 'today';
+      }
+      if(scope==='today'){
+        if(!r.overrides) r.overrides = {};
+        r.overrides[dstr(viewDate)] = { title: newTitle, time: newTime };
+      } else {
+        r.title = newTitle; r.time = newTime;
+        r.anchor = null; r.anchorOffset = null;
+      }
+      r.days = finalDays;
     }
-    r.days = finalDays;
+  }
+  if(editKind==='block' && !editId && promotingItemId){
+    const sourceItem = state.items.find(x=>x.id===promotingItemId);
+    if(sourceItem) sourceItem.completed = true;
+    promotingItemId = null;
   }
   await save();
   document.getElementById('captureBackdrop').classList.remove('open');
   renderAll();
-  showToast('Saved');
+  if(editKind==='block' && captureNoTime){
+    drawerOpen = true;
+    document.getElementById('drawer').style.maxHeight = '60vh';
+    document.getElementById('drawerChevron').textContent = '▾';
+    document.getElementById('drawerBody').style.overflowY = 'auto';
+    showToast('Added — see it in the list below');
+  } else {
+    showToast('Saved');
+  }
 };
 
 (async ()=>{
