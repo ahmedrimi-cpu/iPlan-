@@ -210,7 +210,6 @@ button{font-family:inherit;}
 
 <div class="view" id="viewInbox">
   <div class="inbox-wrap" id="inboxWrap"></div>
-  <div style="padding:0 14px 8px;"><button class="add-task-row" id="pasteSortBtn" style="background:var(--paper);border:1px dashed var(--line);border-radius:12px;width:100%;justify-content:center;">📋 Paste & sort a brain dump</button></div>
   <div style="padding:0 14px 8px;"><button class="add-task-row" id="addAreaBtn" style="background:var(--paper);border:1px dashed var(--line);border-radius:12px;width:100%;justify-content:center;">＋ New area</button></div>
   <div style="padding:0 14px 16px;"><button class="add-task-row" id="pasteToolBtn" style="background:var(--paper);border:1px dashed var(--accent-dim);color:var(--accent);border-radius:12px;width:100%;justify-content:center;">📋 Paste &amp; organize a brain dump</button></div>
 </div>
@@ -1025,7 +1024,7 @@ function renderDrawer(){
   document.getElementById('drawerBody').style.overflowY = drawerOpen ? 'auto' : 'hidden';
   const ds = dstr(viewDate);
   const isActualToday = ds === dstr(new Date());
-  const todayItems = state.items.filter(i=> !i.completed && ((i.today && isActualToday) || i.dateTag===ds));
+  const todayItems = state.items.filter(i=> !i.completed && ((i.today && isActualToday) || (i.dateTag && i.dateTag<=ds)));
   const label = isActualToday ? 'TO DO TODAY' : `TO DO — ${viewDate.toLocaleDateString('en-GB',{weekday:'short', day:'numeric', month:'short'}).toUpperCase()}`;
   document.getElementById('drawerTitle').textContent = `${todayItems.length} THING${todayItems.length===1?'':'S'} ${label}`;
   const countBadge = document.getElementById('actionsCount');
