@@ -11,7 +11,7 @@ You need a free GitHub account. That's the only account required — no paid tie
 5. Commit the upload.
 6. Go to the repo's **Settings → Pages**.
 7. Under "Build and deployment", set Source to **Deploy from a branch**, branch `main`, folder `/ (root)`. Save.
-8. Wait about a minute. GitHub will show you a URL like `https://yourusername.github.io/daybook/`.
+8. Wait about a minute. GitHub will show you a URL like `https://yourusername.github.io/iplan/`.
 
 ## On your phone
 
