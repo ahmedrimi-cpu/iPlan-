@@ -210,7 +210,6 @@ button{font-family:inherit;}
 
 <div class="view" id="viewInbox">
   <div class="inbox-wrap" id="inboxWrap"></div>
-  <div style="padding:0 14px 8px;"><button class="add-task-row" id="addAreaBtn" style="background:var(--paper);border:1px dashed var(--line);border-radius:12px;width:100%;justify-content:center;">＋ New area</button></div>
   <div style="padding:0 14px 16px;"><button class="add-task-row" id="pasteToolBtn" style="background:var(--paper);border:1px dashed var(--accent-dim);color:var(--accent);border-radius:12px;width:100%;justify-content:center;">📋 Paste &amp; organize a brain dump</button></div>
 </div>
 
@@ -1556,7 +1555,6 @@ async function createNewArea(){
   state.areas.push({id: uid(), name: name.trim(), color});
   await save(); renderInbox(); showToast('Area added');
 }
-document.getElementById('addAreaBtn').onclick = createNewArea;
 document.getElementById('captureCancel').onclick = ()=>{ document.getElementById('captureBackdrop').classList.remove('open'); promotingItemId = null; };
 document.getElementById('captureBackdrop').onclick = (e)=>{ if(e.target.id==='captureBackdrop') e.currentTarget.classList.remove('open'); };
 
