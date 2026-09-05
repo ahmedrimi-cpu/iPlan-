@@ -25,7 +25,7 @@
 }
 *{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
 html,body{margin:0;background:var(--bg);color:var(--ink);font-family:'Inter',sans-serif;height:100%;overscroll-behavior:none;}
-body{padding-bottom:96px;background-image:radial-gradient(circle at 20% 10%, rgba(168,69,46,0.03), transparent 40%);}
+body{padding-bottom:120px;background-image:radial-gradient(circle at 20% 10%, rgba(168,69,46,0.03), transparent 40%);}
 h1,h2,h3{font-family:'Fraunces',serif;font-weight:600;margin:0;}
 .mono{font-family:'IBM Plex Mono',monospace;}
 button{font-family:inherit;}
@@ -90,11 +90,14 @@ button{font-family:inherit;}
 .subtask-add button{background:var(--accent-dim);color:var(--accent);border:none;border-radius:8px;padding:0 12px;font-weight:700;font-size:12px;}
 .routine-edit-link{font-size:11px;color:var(--accent);text-decoration:underline;cursor:pointer;padding:4px 0 2px;}
 
-.drawer{position:fixed;left:0;right:0;bottom:0;background:var(--paper);border-radius:20px 20px 0 0;border-top:1px solid var(--line);z-index:30;box-shadow:0 -8px 24px rgba(51,43,34,0.12);transition:max-height 0.25s ease;overflow:hidden;}
+.drawer{position:fixed;left:0;right:0;bottom:78px;background:var(--paper);border-radius:20px 20px 0 0;border-top:1px solid var(--line);z-index:35;box-shadow:0 -8px 24px rgba(51,43,34,0.12);transition:max-height 0.25s ease;overflow:hidden;}
 .drawer-head{display:flex;align-items:center;justify-content:space-between;padding:16px 18px 14px;cursor:pointer;position:relative;min-height:24px;}
 .drawer-head .handle{position:absolute;left:50%;top:6px;transform:translateX(-50%);width:34px;height:4px;background:var(--line);border-radius:3px;}
 .drawer-title{font-size:12px;font-weight:700;letter-spacing:0.4px;color:var(--ink-muted);text-transform:uppercase;}
-.drawer-body{padding:0 14px 18px;}
+.drawer-body{padding:0 14px 18px;scrollbar-width:thin;scrollbar-color:var(--ink-faint) transparent;}
+.drawer-body::-webkit-scrollbar{width:5px;}
+.drawer-body::-webkit-scrollbar-thumb{background:var(--ink-faint);border-radius:3px;}
+.drawer-body::-webkit-scrollbar-track{background:transparent;}
 .dtask{display:flex;align-items:center;gap:12px;background:var(--paper-2);border-radius:12px;padding:12px 12px;margin-bottom:8px;}
 .dtask .dcheck{width:20px;height:20px;border-radius:6px;border:1.5px solid var(--ink-faint);flex-shrink:0;cursor:pointer;}
 .dtask .dcheck.done{background:var(--accent);border-color:var(--accent);position:relative;}
@@ -197,7 +200,8 @@ button{font-family:inherit;}
 
 <div class="view active" id="viewToday">
   <div class="timeline" id="timeline"></div>
-  <div style="padding:0 14px 16px;"><button class="add-task-row" id="addToTimelineBtn" style="background:var(--paper);border:1px dashed var(--line);border-radius:12px;width:100%;justify-content:center;">＋ Add to timeline</button></div>
+  <div style="padding:0 14px 8px;"><button class="add-task-row" id="addToTimelineBtn" style="background:var(--paper);border:1px dashed var(--line);border-radius:12px;width:100%;justify-content:center;">＋ Add to timeline</button></div>
+  <div style="padding:0 14px 16px;"><button class="add-task-row" id="pasteToolBtnToday" style="background:var(--paper);border:1px dashed var(--accent-dim);color:var(--accent);border-radius:12px;width:100%;justify-content:center;">📋 Paste &amp; organize a brain dump</button></div>
 </div>
 
 <div class="view" id="viewWeek">
@@ -206,7 +210,9 @@ button{font-family:inherit;}
 
 <div class="view" id="viewInbox">
   <div class="inbox-wrap" id="inboxWrap"></div>
-  <div style="padding:0 14px 16px;"><button class="add-task-row" id="addAreaBtn" style="background:var(--paper);border:1px dashed var(--line);border-radius:12px;width:100%;justify-content:center;">＋ New area</button></div>
+  <div style="padding:0 14px 8px;"><button class="add-task-row" id="pasteSortBtn" style="background:var(--paper);border:1px dashed var(--line);border-radius:12px;width:100%;justify-content:center;">📋 Paste & sort a brain dump</button></div>
+  <div style="padding:0 14px 8px;"><button class="add-task-row" id="addAreaBtn" style="background:var(--paper);border:1px dashed var(--line);border-radius:12px;width:100%;justify-content:center;">＋ New area</button></div>
+  <div style="padding:0 14px 16px;"><button class="add-task-row" id="pasteToolBtn" style="background:var(--paper);border:1px dashed var(--accent-dim);color:var(--accent);border-radius:12px;width:100%;justify-content:center;">📋 Paste &amp; organize a brain dump</button></div>
 </div>
 
 <div class="view" id="viewSettings">
@@ -242,14 +248,15 @@ button{font-family:inherit;}
         <button class="btn btn-primary" id="loadSkeletonBtn" style="width:100%;">Load weekly skeleton into my calendar</button>
       </div>
     </div>
+    <div style="height:40px;"></div>
   </div>
 </div>
 
 <div class="drawer" id="drawer" style="max-height:60vh;">
   <div class="drawer-head" id="drawerHead">
     <div class="handle"></div>
-    <div class="drawer-title" id="drawerTitle">3 THINGS TO DO TODAY</div>
-    <div style="color:var(--ink-muted);font-size:13px;" id="drawerChevron">▾</div>
+    <div class="drawer-title" id="drawerTitle" style="cursor:pointer;">3 THINGS TO DO TODAY</div>
+    <button id="drawerChevron" style="color:var(--ink-muted);font-size:15px;background:var(--paper-2);border:none;border-radius:8px;padding:4px 10px;cursor:pointer;">▾</button>
   </div>
   <div class="drawer-body" id="drawerBody"></div>
 </div>
@@ -378,6 +385,30 @@ button{font-family:inherit;}
   </div>
 </div>
 
+<div class="sheet-backdrop" id="pasteBackdrop">
+  <div class="sheet" style="max-height:92vh;">
+    <div class="sheet-handle"></div>
+    <div id="pasteStep1">
+      <h2 style="font-size:17px;margin-bottom:6px;">Paste your brain dump</h2>
+      <div class="settings-note" style="margin-bottom:12px;">Works best with your own layout — a heading, then the lines under it, with a blank line between groups. Day names and times are detected automatically and become Timeline items; everything else defaults to an Inbox item under that heading — switch any line to "Action" if it's a confirmed thing to do today rather than a long-term item. Nothing is added until you confirm on the next screen.</div>
+      <textarea id="pasteTextarea" placeholder="KPMG&#10;Phoebe&#10;BPT&#10;&#10;Thursday Islam after Quran at Salah&#10;..." style="width:100%;min-height:220px;background:var(--paper-2);border:1px solid var(--line);color:var(--ink);padding:12px;border-radius:10px;font-size:13.5px;font-family:'IBM Plex Mono';"></textarea>
+      <div class="sheet-actions">
+        <button class="btn btn-ghost" id="pasteCancel1">Cancel</button>
+        <button class="btn btn-primary" id="pasteParseBtn">Preview</button>
+      </div>
+    </div>
+    <div id="pasteStep2" style="display:none;">
+      <h2 style="font-size:17px;margin-bottom:6px;">Review before adding</h2>
+      <div class="settings-note" style="margin-bottom:12px;">Edit any wording, retag the type, or remove a line. Nothing is saved yet.</div>
+      <div id="pasteGroups"></div>
+      <div class="sheet-actions">
+        <button class="btn btn-ghost" id="pasteBack">Back</button>
+        <button class="btn btn-primary" id="pasteConfirmBtn">Confirm &amp; add all</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <div class="toast" id="toast"></div>
 
 <script>
@@ -434,19 +465,20 @@ function defaults(){
       {id:uid(), title:'Audit startup signup data', areaId:'startup', today:true, completed:false},
       {id:uid(), title:'Reply to Ahmed', areaId:'personal', today:true, completed:false},
       {id:uid(), title:'Look into certifications', areaId:'certs', today:true, completed:false},
+      {id:uid(), title:'Breakfast with wife', areaId:'personal', today:false, completed:false},
+      {id:uid(), title:'Dinner with wife', areaId:'personal', today:false, completed:false},
     ],
     blocks: [
       {id:uid(), title:'Gym', sub:'Right after morning routine', time:'06:00', endTime:'06:45', icon:'runner', color:'var(--accent)', dim:'var(--accent-dim)', checkable:true, days:[0,1,2,3,4,5,6]},
       {id:uid(), title:'Work', sub:'', time:'09:00', endTime:'17:00', icon:'work', color:'var(--slate)', dim:'var(--slate-dim)', checkable:false, days:[1,2,3,4,5]},
-      {id:uid(), title:'Class · Sheikh M. Ali', sub:'Weekly, until further notice', time:'20:15', endTime:'21:30', icon:'star', color:'var(--gold)', dim:'var(--gold-dim)', checkable:false, days:[1]},
-      {id:uid(), title:'Islam in Context to Modernity — Ustad Malik', sub:'Starts 8:15 — put 8:00 to make it', time:'20:00', endTime:'21:15', icon:'book', color:'var(--gold)', dim:'var(--gold-dim)', checkable:false, days:[3]},
-      {id:uid(), title:'Quran class w/ brother-in-law', sub:'', time:'19:30', endTime:'20:15', icon:'book', color:'var(--gold)', dim:'var(--gold-dim)', checkable:false, days:[4]},
+      {id:uid(), title:'Beneficial Knowledge Class with Sheikh Mohammed Ali', sub:'Weekly, until further notice', time:'20:15', endTime:'21:30', icon:'star', color:'var(--gold)', dim:'var(--gold-dim)', checkable:false, days:[1]},
+      {id:uid(), title:'Islam in Context to Modernity — Ustadh Malik', sub:'Starts 8:15 — put 8:00 to make it', time:'20:00', endTime:'21:15', icon:'book', color:'var(--gold)', dim:'var(--gold-dim)', checkable:false, days:[3]},
+      {id:uid(), title:'Quran class at Salaam', sub:'', time:'19:30', endTime:'20:15', icon:'book', color:'var(--gold)', dim:'var(--gold-dim)', checkable:false, days:[4]},
       {id:uid(), title:'Family check-in — Hoya + own family', sub:'Wife\'s family, then parents/grandparents', time:'15:30', endTime:'16:30', icon:'heart', color:'var(--accent)', dim:'var(--accent-dim)', checkable:true, days:[5]},
       {id:uid(), title:'Quran w/ sister', sub:'', time:'17:30', endTime:'18:00', icon:'book', color:'var(--gold)', dim:'var(--gold-dim)', checkable:false, days:[5]},
       {id:uid(), title:'Quality time with wife', sub:'Friday anchor', time:'20:00', endTime:null, icon:'heart', color:'var(--accent)', dim:'var(--accent-dim)', checkable:false, days:[5]},
       {id:uid(), title:'Quran Halaqah', sub:'Optional', time:'07:00', endTime:'08:00', icon:'book', color:'var(--sage)', dim:'var(--sage-dim)', checkable:true, days:[6]},
-      {id:uid(), title:'Breakfast with wife', sub:'', time:'08:30', endTime:'09:15', icon:'heart', color:'var(--accent)', dim:'var(--accent-dim)', checkable:false, days:[6]},
-      {id:uid(), title:'Rest / recovery', sub:'No football this season', time:'10:00', endTime:null, icon:'moon', color:'var(--slate)', dim:'var(--slate-dim)', checkable:false, days:[6]},
+      {id:uid(), title:'Football', sub:'Seasonal — skip via swipe on off weeks', time:'10:00', endTime:'11:30', icon:'runner', color:'var(--sage)', dim:'var(--sage-dim)', checkable:true, days:[6]},
       {id:uid(), title:'Reset day — audit week & checklist', sub:'', time:'10:00', endTime:'11:00', icon:'dot', color:'var(--slate)', dim:'var(--slate-dim)', checkable:true, days:[0]},
     ],
     routines: [
@@ -543,6 +575,187 @@ function appChoice(message, options){
     cancelBtn.onclick = ()=>cleanup(null);
   });
 }
+
+const DOW_NAMES = ['sunday','monday','tuesday','wednesday','thursday','friday','saturday'];
+function nextDateForWeekday(name, fromDate){
+  const target = DOW_NAMES.indexOf(name.toLowerCase());
+  if(target<0) return null;
+  const d = new Date(fromDate);
+  const diff = (target - d.getDay() + 7) % 7;
+  d.setDate(d.getDate() + diff);
+  return dstr(d);
+}
+const MONTH_NAMES = ['january','february','march','april','may','june','july','august','september','october','november','december'];
+function nextDateForMonthDay(monthIdx, day, year, today){
+  const now = today;
+  let y = year || now.getFullYear();
+  if(!year){
+    const candidate = new Date(y, monthIdx, day || 1);
+    if(candidate < now) y += 1; // if that date already passed this year, assume next year
+  }
+  const d = new Date(y, monthIdx, day || 1, 12);
+  return dstr(d);
+}
+function detectDateTime(line, today){
+  const dowMatch = line.match(/\b(sunday|monday|tuesday|wednesday|thursday|friday|saturday)\b/i);
+  const monthPattern = MONTH_NAMES.join('|');
+  const dayMonthMatch = line.match(new RegExp(`\\b(\\d{1,2})(?:st|nd|rd|th)?\\s+(${monthPattern})\\b`, 'i'));
+  const monthDayMatch = !dayMonthMatch ? line.match(new RegExp(`\\b(${monthPattern})\\s+(\\d{1,2})(?:st|nd|rd|th)?\\b`, 'i')) : null;
+  const monthYearMatch = (!dayMonthMatch && !monthDayMatch) ? line.match(new RegExp(`\\b(${monthPattern})\\s+(\\d{4})\\b`, 'i')) : null;
+  const rangeMatch = line.match(/\b(\d{1,2}(?::\d{2})?)\s*(am|pm)?\s*(?:-|–|to)\s*(\d{1,2}(?::\d{2})?)\s*(am|pm)?\b/i);
+  const singleMatch = !rangeMatch ? line.match(/\b(\d{1,2}:\d{2})\s*(am|pm)?\b/i) : null;
+  function to24(h, ap){
+    let [hh,mm] = h.includes(':') ? h.split(':').map(Number) : [parseInt(h), 0];
+    if(ap){
+      if(ap.toLowerCase()==='pm' && hh<12) hh+=12;
+      if(ap.toLowerCase()==='am' && hh===12) hh=0;
+    } else if(hh < 8) { hh += 12; } // bare small numbers like "6:45" with no am/pm, in his notes usually pm evenings; heuristic only, editable in preview
+    return pad(hh)+':'+pad(mm);
+  }
+  let date = null, time = null, endTime = null;
+  if(dowMatch) date = nextDateForWeekday(dowMatch[1], today);
+  else if(dayMonthMatch) date = nextDateForMonthDay(MONTH_NAMES.indexOf(dayMonthMatch[2].toLowerCase()), parseInt(dayMonthMatch[1]), null, today);
+  else if(monthDayMatch) date = nextDateForMonthDay(MONTH_NAMES.indexOf(monthDayMatch[1].toLowerCase()), parseInt(monthDayMatch[2]), null, today);
+  else if(monthYearMatch) date = nextDateForMonthDay(MONTH_NAMES.indexOf(monthYearMatch[1].toLowerCase()), 1, parseInt(monthYearMatch[2]), today);
+  if(rangeMatch){
+    time = to24(rangeMatch[1], rangeMatch[2]);
+    endTime = to24(rangeMatch[3], rangeMatch[4] || rangeMatch[2]);
+  } else if(singleMatch){
+    time = to24(singleMatch[1], singleMatch[2]);
+  }
+  return {date, time, endTime};
+}
+function parseBrainDump(text){
+  const today = new Date();
+  const blocks = text.split(/\n\s*\n/).map(b=>b.split('\n').map(l=>l.trim()).filter(Boolean)).filter(b=>b.length);
+  return blocks.map(lines=>{
+    const heading = lines.length > 1 ? lines[0] : null;
+    const childLines = lines.length > 1 ? lines.slice(1) : lines;
+    const items = childLines.map(line=>{
+      const dt = detectDateTime(line, today);
+      return {
+        text: line,
+        kind: (dt.date || dt.time) ? 'timeline' : 'inbox',
+        date: dt.date || dstr(today),
+        time: dt.time || '09:00',
+        endTime: dt.endTime || null,
+      };
+    });
+    return { heading, items };
+  });
+}
+
+let pasteParsedGroups = [];
+function openPasteTool(){
+  document.getElementById('pasteTextarea').value = '';
+  document.getElementById('pasteStep1').style.display = 'block';
+  document.getElementById('pasteStep2').style.display = 'none';
+  document.getElementById('pasteBackdrop').classList.add('open');
+}
+function renderPastePreview(){
+  const wrap = document.getElementById('pasteGroups');
+  wrap.innerHTML = pasteParsedGroups.map((g, gi)=>{
+    const matchedArea = g.heading!==null ? state.areas.find(a=>a.name.toLowerCase()===g.heading.trim().toLowerCase()) : null;
+    const areaOptions = state.areas.map(a=>`<option value="${a.id}" ${matchedArea && matchedArea.id===a.id ? 'selected' : ''}>${esc(a.name)}</option>`).join('');
+    const headingRow = g.heading!==null ? `
+      <div class="row2" style="margin-bottom:8px;">
+        <div class="field" style="margin-bottom:0;"><input type="text" data-heading="${gi}" value="${esc(g.heading)}" style="width:100%;background:var(--paper-2);border:1px solid var(--line);color:var(--ink);padding:8px 10px;border-radius:8px;font-weight:600;font-size:13.5px;"></div>
+        <div class="field" style="margin-bottom:0;"><select data-group-area="${gi}" style="width:100%;background:var(--paper-2);border:1px solid var(--line);color:var(--ink);padding:8px 10px;border-radius:8px;font-size:13px;">
+          <option value="__new__" ${!matchedArea ? 'selected' : ''}>→ New area from heading</option>${areaOptions}
+        </select></div>
+      </div>` : '';
+    const itemRows = g.items.map((it, ii)=>`
+      <div style="display:flex;gap:6px;align-items:center;margin-bottom:6px;flex-wrap:wrap;">
+        <input type="text" data-itemtext="${gi}:${ii}" value="${esc(it.text)}" style="flex:2;min-width:140px;background:var(--paper-2);border:1px solid var(--line);color:var(--ink);padding:7px 9px;border-radius:7px;font-size:12.5px;">
+        <select data-itemkind="${gi}:${ii}" style="background:var(--paper-2);border:1px solid var(--line);color:var(--ink);padding:7px 6px;border-radius:7px;font-size:11.5px;">
+          <option value="inbox" ${it.kind==='inbox'?'selected':''}>Inbox (long-term)</option>
+          <option value="action" ${it.kind==='action'?'selected':''}>Action (today)</option>
+          <option value="timeline" ${it.kind==='timeline'?'selected':''}>Timeline</option>
+        </select>
+        ${it.kind==='timeline' ? `<input type="date" data-itemdate="${gi}:${ii}" value="${it.date}" style="background:var(--paper-2);border:1px solid var(--line);color:var(--ink);padding:6px;border-radius:7px;font-size:11.5px;">
+        <input type="time" data-itemtime="${gi}:${ii}" value="${it.time}" style="background:var(--paper-2);border:1px solid var(--line);color:var(--ink);padding:6px;border-radius:7px;font-size:11.5px;">` : ''}
+        ${it.kind==='action' ? `<input type="date" data-itemdate="${gi}:${ii}" value="${it.date}" style="background:var(--paper-2);border:1px solid var(--line);color:var(--ink);padding:6px;border-radius:7px;font-size:11.5px;">` : ''}
+        <button data-itemremove="${gi}:${ii}" style="background:none;border:none;color:var(--ink-faint);font-size:15px;">×</button>
+      </div>`).join('');
+    return `<div style="background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:12px;margin-bottom:12px;">${headingRow}${itemRows || '<div style="font-size:12px;color:var(--ink-faint);">No lines in this group</div>'}</div>`;
+  }).join('') || '<div class="settings-note">Nothing detected — go back and check your text.</div>';
+
+  wrap.querySelectorAll('[data-heading]').forEach(el=>{ el.oninput = ()=>{ pasteParsedGroups[el.dataset.heading].heading = el.value; }; });
+  wrap.querySelectorAll('[data-itemtext]').forEach(el=>{
+    el.oninput = ()=>{ const [gi,ii]=el.dataset.itemtext.split(':'); pasteParsedGroups[gi].items[ii].text = el.value; };
+  });
+  wrap.querySelectorAll('[data-itemkind]').forEach(el=>{
+    el.onchange = ()=>{ const [gi,ii]=el.dataset.itemkind.split(':'); pasteParsedGroups[gi].items[ii].kind = el.value; renderPastePreview(); };
+  });
+  wrap.querySelectorAll('[data-itemdate]').forEach(el=>{
+    el.onchange = ()=>{ const [gi,ii]=el.dataset.itemdate.split(':'); pasteParsedGroups[gi].items[ii].date = el.value; };
+  });
+  wrap.querySelectorAll('[data-itemtime]').forEach(el=>{
+    el.onchange = ()=>{ const [gi,ii]=el.dataset.itemtime.split(':'); pasteParsedGroups[gi].items[ii].time = el.value; };
+  });
+  wrap.querySelectorAll('[data-itemremove]').forEach(el=>{
+    el.onclick = ()=>{ const [gi,ii]=el.dataset.itemremove.split(':'); pasteParsedGroups[gi].items.splice(ii,1); renderPastePreview(); };
+  });
+}
+document.getElementById('pasteToolBtn').onclick = openPasteTool;
+document.getElementById('pasteToolBtnToday').onclick = openPasteTool;
+document.getElementById('pasteCancel1').onclick = ()=> document.getElementById('pasteBackdrop').classList.remove('open');
+document.getElementById('pasteBack').onclick = ()=>{
+  document.getElementById('pasteStep1').style.display = 'block';
+  document.getElementById('pasteStep2').style.display = 'none';
+};
+document.getElementById('pasteParseBtn').onclick = ()=>{
+  const text = document.getElementById('pasteTextarea').value;
+  if(!text.trim()){ showToast('Paste something first'); return; }
+  pasteParsedGroups = parseBrainDump(text);
+  document.getElementById('pasteStep1').style.display = 'none';
+  document.getElementById('pasteStep2').style.display = 'block';
+  renderPastePreview();
+};
+document.getElementById('pasteConfirmBtn').onclick = async ()=>{
+  let addedActions = 0, addedTimeline = 0, addedAreas = 0, addedInbox = 0;
+  // Resolve area choice per group from the live selects (values may have changed since parse)
+  const groupAreaEls = document.querySelectorAll('[data-group-area]');
+  const groupAreaChoice = {};
+  groupAreaEls.forEach(el=> groupAreaChoice[el.dataset.groupArea] = el.value);
+
+  pasteParsedGroups.forEach((g, gi)=>{
+    let areaId = null;
+    if(g.heading !== null){
+      const choice = groupAreaChoice[gi];
+      if(choice === '__new__' || !choice){
+        const palette = ['var(--accent)','var(--slate)','var(--gold)','var(--sage)'];
+        const newArea = {id: uid(), name: g.heading.trim() || 'Untitled', color: palette[state.areas.length % palette.length]};
+        state.areas.push(newArea);
+        areaId = newArea.id;
+        addedAreas++;
+      } else {
+        areaId = choice;
+      }
+    }
+    g.items.forEach(it=>{
+      if(!it.text.trim()) return;
+      if(it.kind==='timeline'){
+        state.blocks.push({
+          id: uid(), title: it.text.trim(), sub:'', time: it.time, endTime: it.endTime,
+          icon:'dot', color:'var(--slate)', dim:'var(--slate-dim)', checkable:true,
+          oneOffDate: it.date, days: [],
+        });
+        addedTimeline++;
+      } else if(it.kind==='action'){
+        state.items.push({id: uid(), title: it.text.trim(), areaId: null, today:false, completed:false, dateTag: it.date});
+        addedActions++;
+      } else {
+        state.items.push({id: uid(), title: it.text.trim(), areaId: areaId, today:false, completed:false});
+        addedInbox++;
+      }
+    });
+  });
+  await save();
+  document.getElementById('pasteBackdrop').classList.remove('open');
+  renderAll();
+  showToast(`Added ${addedAreas} area(s), ${addedInbox} inbox item(s), ${addedActions} action(s), ${addedTimeline} timeline item(s)`);
+};
 
 async function removeBlockWithScope(blockId, forDate){
   const block = state.blocks.find(x=>x.id===blockId);
@@ -818,14 +1031,14 @@ function renderDrawer(){
   const countBadge = document.getElementById('actionsCount');
   if(countBadge) countBadge.textContent = todayItems.length;
   let html='';
+  html += `<div style="display:flex;gap:8px;margin-bottom:10px;"><input type="text" id="quickActionInput" placeholder="Quick action — type and tap +" style="flex:1;background:var(--paper-2);border:1px solid var(--line);color:var(--ink);padding:10px 11px;border-radius:9px;font-size:13.5px;"><button id="quickActionAdd" style="background:var(--accent);color:#FBF6EA;border:none;border-radius:9px;padding:0 16px;font-weight:700;font-size:16px;">＋</button></div>`;
   if(todayItems.length===0){
-    html += `<div style="text-align:center;padding:14px 10px;color:var(--ink-muted);font-size:13px;">No actions yet for ${isActualToday?'today':'this day'} — add one below.</div>`;
+    html += `<div style="text-align:center;padding:8px 10px 14px;color:var(--ink-muted);font-size:13px;">No actions yet for ${isActualToday?'today':'this day'}.</div>`;
   }
   todayItems.forEach(i=>{
     const area = i.areaId ? state.areas.find(a=>a.id===i.areaId) : null;
     html += `<div class="dtask"><div class="dcheck" data-itemdone="${i.id}"></div><span data-itemedit="${i.id}">${esc(i.title)}</span><div class="dot" style="background:${area?area.color:'var(--ink-faint)'}"></div></div>`;
   });
-  html += `<div class="add-task-row" id="drawerAddTask">＋ Add task</div>`;
   document.getElementById('drawerBody').innerHTML = html;
   document.querySelectorAll('[data-itemdone]').forEach(el=>{
     el.onclick = async ()=>{ const item=state.items.find(x=>x.id===el.dataset.itemdone); item.completed=true; await save(); renderDrawer(); showToast('Marked done'); };
@@ -833,23 +1046,32 @@ function renderDrawer(){
   document.querySelectorAll('[data-itemedit]').forEach(el=>{
     el.onclick = ()=> openEditItem(el.dataset.itemedit);
   });
-  document.getElementById('drawerAddTask').onclick = ()=> openCapture({defaultToday:true});
+  const quickAdd = async ()=>{
+    const input = document.getElementById('quickActionInput');
+    const val = input.value.trim();
+    if(!val) return;
+    state.items.push({id:uid(), title:val, areaId:null, today:false, completed:false, dateTag: dstr(viewDate)});
+    await save();
+    renderDrawer();
+    showToast('Added');
+  };
+  document.getElementById('quickActionAdd').onclick = quickAdd;
+  document.getElementById('quickActionInput').addEventListener('keydown', (e)=>{ if(e.key==='Enter') quickAdd(); });
 }
 let drawerOpen=true;
-document.getElementById('drawerHead').onclick = ()=>{
-  drawerOpen=!drawerOpen;
-  document.getElementById('drawer').style.maxHeight = drawerOpen?'60vh':'52px';
-  document.getElementById('drawerChevron').textContent = drawerOpen?'▾':'▲';
-  document.getElementById('drawerBody').style.overflowY = drawerOpen?'auto':'hidden';
-};
+function setDrawerState(open){
+  drawerOpen = open;
+  document.getElementById('drawer').style.maxHeight = open?'60vh':'52px';
+  document.getElementById('drawerChevron').textContent = open?'▾':'▲';
+  document.getElementById('drawerBody').style.overflowY = open?'auto':'hidden';
+}
+document.getElementById('drawerTitle').onclick = ()=> setDrawerState(true);
+document.getElementById('drawerChevron').onclick = (ev)=>{ ev.stopPropagation(); setDrawerState(!drawerOpen); };
 document.getElementById('actionsShortcutBtn').onclick = ()=>{
   if(currentView !== 'today'){
     document.querySelector('.nav-item[data-view="today"]').click();
   }
-  drawerOpen = true;
-  document.getElementById('drawer').style.maxHeight = '60vh';
-  document.getElementById('drawerChevron').textContent = '▾';
-  document.getElementById('drawerBody').style.overflowY = 'auto';
+  setDrawerState(true);
   const drawerEl = document.getElementById('drawer');
   if(drawerEl.scrollIntoView) drawerEl.scrollIntoView({behavior:'smooth', block:'end'});
 };
@@ -881,7 +1103,12 @@ function renderWeek(){
   }
   document.getElementById('weekWrap').innerHTML = html;
   document.querySelectorAll('[data-weekday]').forEach(el=>{
-    el.onclick = ()=>{ viewDate = new Date(el.dataset.weekday+'T12:00:00'); document.querySelector('.nav-item[data-view="today"]').click(); };
+    el.onclick = ()=>{
+      const d = new Date(el.dataset.weekday+'T12:00:00');
+      viewDate = d;
+      document.querySelector('.nav-item[data-view="today"]').click();
+      showToast('Now on ' + d.toLocaleDateString('en-GB',{weekday:'long', day:'numeric', month:'short'}));
+    };
   });
 }
 
@@ -890,11 +1117,12 @@ function renderInbox(){
   state.areas.forEach(a=>{
     const items = state.items.filter(i=> i.areaId===a.id && !i.completed);
     const openState = state._areaOpen===a.id;
-    html += `<div class="area-card" data-swipearea="${a.id}"><div class="area-head" data-areatoggle="${a.id}">
+    html += `<div class="area-card"><div class="area-head" data-areatoggle="${a.id}">
         <div class="area-name"><span class="dot" style="background:${a.color}"></span>${a.name}</div><div class="area-count">${items.length}</div></div>
       <div class="area-items ${openState?'open':''}">
         ${items.map(i=>`<div class="area-item" data-swipeid="${i.id}"><span data-itemedit="${i.id}">${esc(i.title)}${i.deadline?` <span class="wd-chip" style="margin-left:4px;">Due ${fmtDate(i.deadline)}</span>`:''}</span><button class="promote" data-promote="${i.id}">→ Timeline</button><button class="idel" data-idel="${i.id}">×</button></div>`).join('')}
         <div class="area-add"><input type="text" placeholder="New item…" data-areainput="${a.id}"><button data-areaaddbtn="${a.id}">Add</button></div>
+        <div style="text-align:right;padding-top:8px;"><button data-areadelete="${a.id}" style="background:none;border:none;color:var(--ink-faint);font-size:11.5px;text-decoration:underline;">Delete this area</button></div>
       </div></div>`;
   });
   document.getElementById('inboxWrap').innerHTML = html;
@@ -915,35 +1143,19 @@ function renderInbox(){
     el.onclick = async ()=>{ state.items = state.items.filter(x=>x.id!==el.dataset.idel); await save(); renderInbox(); renderDrawer(); showToast('Deleted'); };
   });
   document.querySelectorAll('[data-itemedit]').forEach(el=>{ el.onclick = ()=> openEditItem(el.dataset.itemedit); });
-  document.querySelectorAll('[data-swipearea]').forEach(card=>{
-    let sx=null;
-    card.addEventListener('touchstart', e=>{ sx=e.touches[0].clientX; card.style.transition='none'; }, {passive:true});
-    card.addEventListener('touchmove', e=>{
-      if(sx===null) return;
-      const dx = e.touches[0].clientX - sx;
-      if(dx > 0) card.style.transform = `translateX(${Math.min(dx,90)}px)`;
-    }, {passive:true});
-    card.addEventListener('touchend', async e=>{
-      if(sx===null) return;
-      const dx = e.changedTouches[0].clientX - sx;
-      card.style.transition='transform 0.2s ease';
-      if(dx > 80){
-        const id = card.dataset.swipearea;
-        const area = state.areas.find(x=>x.id===id);
-        const count = state.items.filter(i=>i.areaId===id).length;
-        const msg = count>0 ? `Delete "${area.name}" and its ${count} item(s)?` : `Delete "${area.name}"?`;
-        if(await appConfirm(msg)){
-          state.items = state.items.filter(i=>i.areaId!==id);
-          state.areas = state.areas.filter(x=>x.id!==id);
-          await save(); renderInbox(); renderDrawer(); showToast('Area deleted');
-        } else {
-          card.style.transform = 'translateX(0)';
-        }
-      } else {
-        card.style.transform = 'translateX(0)';
+  document.querySelectorAll('[data-areadelete]').forEach(btn=>{
+    btn.onclick = async (ev)=>{
+      ev.stopPropagation();
+      const id = btn.dataset.areadelete;
+      const area = state.areas.find(x=>x.id===id);
+      const count = state.items.filter(i=>i.areaId===id).length;
+      const msg = count>0 ? `Delete "${area.name}" and its ${count} item(s)?` : `Delete "${area.name}"?`;
+      if(await appConfirm(msg)){
+        state.items = state.items.filter(i=>i.areaId!==id);
+        state.areas = state.areas.filter(x=>x.id!==id);
+        await save(); renderInbox(); renderDrawer(); showToast('Area deleted');
       }
-      sx=null;
-    }, {passive:true});
+    };
   });
   document.querySelectorAll('[data-swipeid]').forEach(row=>{
     let sx=null;
@@ -951,14 +1163,14 @@ function renderInbox(){
     row.addEventListener('touchmove', e=>{
       if(sx===null) return;
       const dx = e.touches[0].clientX - sx;
-      if(dx > 0) row.style.transform = `translateX(${Math.min(dx,90)}px)`;
+      if(dx < 0) row.style.transform = `translateX(${Math.max(dx,-90)}px)`;
     }, {passive:true});
     row.addEventListener('touchend', async e=>{
       if(sx===null) return;
       const dx = e.changedTouches[0].clientX - sx;
       row.style.transition='transform 0.2s ease';
-      if(dx > 80){
-        row.style.transform = 'translateX(100%)';
+      if(dx < -80){
+        row.style.transform = 'translateX(-100%)';
         const id = row.dataset.swipeid;
         setTimeout(async ()=>{
           state.items = state.items.filter(x=>x.id!==id);
@@ -1084,6 +1296,16 @@ document.querySelectorAll('.nav-item[data-view]').forEach(el=>{
     document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
     document.getElementById('view'+el.dataset.view.charAt(0).toUpperCase()+el.dataset.view.slice(1)).classList.add('active');
     document.getElementById('drawer').style.display = el.dataset.view==='today' ? 'block':'none';
+    if(el.dataset.view==='today'){ renderTimeline(); renderDrawer(); renderStrip(); renderHeader(); }
+    else if(el.dataset.view==='week'){ renderWeek(); }
+    else if(el.dataset.view==='inbox'){ renderInbox(); }
+    else if(el.dataset.view==='settings'){ renderSettings(); }
+    if(el.dataset.view==='week'){
+      setTimeout(()=>{
+        const todayCard = document.querySelector('.week-day .wd-date.today');
+        if(todayCard && todayCard.scrollIntoView) todayCard.scrollIntoView({behavior:'smooth', block:'center'});
+      }, 50);
+    }
   };
 });
 let viewBeforeSettings = 'today';
@@ -1323,18 +1545,19 @@ function openEditRoutineMeta(id){
 }
 
 document.getElementById('headerAddBtn').onclick = ()=>{
-  if(currentView==='inbox') openCapture({});
+  if(currentView==='inbox') createNewArea();
   else openNewBlock();
 };
 document.getElementById('addToTimelineBtn').onclick = ()=> openNewBlock();
-document.getElementById('addAreaBtn').onclick = async ()=>{
+async function createNewArea(){
   const name = await appPrompt('Name this area');
   if(!name || !name.trim()) return;
   const palette = ['var(--accent)','var(--slate)','var(--gold)','var(--sage)'];
   const color = palette[state.areas.length % palette.length];
   state.areas.push({id: uid(), name: name.trim(), color});
   await save(); renderInbox(); showToast('Area added');
-};
+}
+document.getElementById('addAreaBtn').onclick = createNewArea;
 document.getElementById('captureCancel').onclick = ()=>{ document.getElementById('captureBackdrop').classList.remove('open'); promotingItemId = null; };
 document.getElementById('captureBackdrop').onclick = (e)=>{ if(e.target.id==='captureBackdrop') e.currentTarget.classList.remove('open'); };
 
